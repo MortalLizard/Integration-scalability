@@ -1,0 +1,74 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  billing:
+    build:
+      context: "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt"
+      dockerfile: "Billing/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net10.0/Billing.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "billing:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt\\Billing:/app:rw"
+    - "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt:/src:rw"
+    - "C:\\Users\\benni\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"
+  inventory:
+    build:
+      context: "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt"
+      dockerfile: "Inventory/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net10.0/Inventory.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "inventory:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt\\Inventory:/app:rw"
+    - "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt:/src:rw"
+    - "C:\\Users\\benni\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"
+  marketplace:
+    build:
+      context: "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt"
+      dockerfile: "Marketplace/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net10.0/Marketplace.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "marketplace:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt\\Marketplace:/app:rw"
+    - "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt:/src:rw"
+    - "C:\\Users\\benni\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"
+  search:
+    build:
+      context: "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt"
+      dockerfile: "Search/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net10.0/Search.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "search:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt\\Search:/app:rw"
+    - "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt:/src:rw"
+    - "C:\\Users\\benni\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"

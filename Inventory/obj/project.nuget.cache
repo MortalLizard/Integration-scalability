@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "BiUIbdvj/bU=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\benni\\Documents\\Software 2\\Systemintegration\\Projekt\\Inventory\\Inventory.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\benni\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.0\\microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
+    "C:\\Users\\benni\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

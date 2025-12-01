@@ -1,0 +1,107 @@
+﻿services:
+  marketplace:
+    image: marketplace
+    build:
+      context: .
+      dockerfile: Marketplace/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - marketplace-db
+
+  inventory:
+    image: inventory
+    build:
+      context: .
+      dockerfile: Inventory/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_URLS=http://+:8081
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - inventory-db
+
+  billing:
+    image: billing
+    build:
+      context: .
+      dockerfile: Billing/Dockerfile
+    ports:
+        - "8082:8082"
+    environment:
+      - ASPNETCORE_URLS=http://+:8082
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - billing-db
+
+  search:
+    image: search
+    build:
+      context: .
+      dockerfile: Search/Dockerfile
+    ports:
+        - "8083:8083"
+    environment:
+      - ASPNETCORE_URLS=http://+:8083
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - search-db
+
+  marketplace-db:
+    image: mariadb:11
+    container_name: marketplace-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: marketplace_root
+      MARIADB_DATABASE: marketplace
+    ports:
+      - "3307:3306"
+    volumes:
+      - marketplace_data:/var/lib/mysql
+
+  billing-db:
+    image: mariadb:11
+    container_name: billing-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: billing_root
+      MARIADB_DATABASE: billing
+    ports:
+      - "3308:3306"
+    volumes:
+      - billing_data:/var/lib/mysql
+
+  inventory-db:
+    image: mariadb:11
+    container_name: inventory-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: inventory_root
+      MARIADB_DATABASE: inventory
+    ports:
+      - "3309:3306"
+    volumes:
+      - inventory_data:/var/lib/mysql
+
+  search-db:
+    image: mongo:7
+    container_name: search-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: search_root
+      MONGO_INITDB_ROOT_PASSWORD: search_root_pw
+      MONGO_INITDB_DATABASE: search
+    ports:
+      - "27018:27017"
+    volumes:
+      - search_data:/data/db
+
+volumes:
+  marketplace_data:
+  billing_data:
+  inventory_data:
+  search_data:
