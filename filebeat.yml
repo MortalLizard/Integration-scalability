@@ -1,0 +1,21 @@
+filebeat.inputs:
+  - type: container
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    processors:
+      - add_docker_metadata: ~
+      - drop_event:
+          when:
+            contains:
+              docker.container.image: "filebeat"    # avoid harvesting Filebeat's own logs
+      - drop_event:
+          when:
+            equals:
+              docker.container.name: "filebeat"    # extra safety if container name matches
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  index: "docker-logs-%{+yyyy.MM.dd}"
+
+setup.kibana:
+  host: "kibana:5601"
