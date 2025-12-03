@@ -1,22 +1,12 @@
-﻿# =========================================
-# .NET / C# build artifacts
-# =========================================
+# ==========================
+# .NET & C# Application Ignore
+# ==========================
 
-# Build output
+# Ignore build directories & output
 [Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-
-# Configuration / intermediate
-*.user
-*.userosscache
-*.suo
-*.sln.docstates
-*.userprefs
-*.rsuser
-
-# Build configurations
 [Dd]ebug/
 [Rr]elease/
 [Rr]eleases/
@@ -28,87 +18,75 @@ bld/
 [Bb]uild/
 ipch/
 [Oo]ut/
-[Ll]ogs/
+artifacts/
+publish/
+dist/
+build/
 
-# Test results
+# Ignore IDE/editor-specific folders
+.vs/
+.idea/
+.vscode/
+.localhistory/
+.vshistory/
+.ionide/
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Ignore configuration/intermediate/user files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.userprefs
+*.rsuser
+*.iws
+*.VC.db
+*.VC.VC.opendb
+
+# Ignore test result files
 [Tt]est[Rr]esult*/
 [Tt]est[Rr]esults*/
 *.trx
 *.coverage
 *.coveragexml
 
-# NuGet
+# Ignore packages and NuGet cruft
 *.nupkg
 *.snupkg
 *.nuspec
+.nuget/
 **/packages/*
 !**/packages/build/
 !**/packages/repositories.config
 *.nuget.props
 *.nuget.targets
-
-# .NET tools / caches
 project.lock.json
 project.fragment.lock.json
-artifacts/
 *.gpState
-.nuget/
 *.cache
 *.msp
 *.msi
 
-# Entity Framework Migrations metadata (generated)
+# Ignore Entity Framework Migrations generated files
 *.Designer.cs
 
-# Publish output
-publish/
+# Ignore publish config files
 *.pubxml
 *.pubxml.user
 
-# Rider / ReSharper caches (often under .idea but keep explicit)
-_ReSharper*/
-*.[Rr]e[Ss]harper
-*.DotSettings.user
+# Ignore Node/tooling files (if used)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.cache/
+coverage/
+lerna-debug.log*
 
-# =========================================
-# IDE / Editor-specific files
-# =========================================
-
-# Visual Studio
-.vs/
-*.VC.db
-*.VC.VC.opendb
-Generated\ Files/
-
-# JetBrains Rider / IntelliJ-based
-.idea/
-*.iws
-out/
-
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-
-# MonoDevelop / Xamarin Studio
-*.userprefs
-
-# Generic editor cruft
-*~
-*.swp
-*.swo
-*.tmp
-*.bak
-*.orig
-
-# =========================================
-# OS-specific clutter
-# =========================================
-
-# Windows
+# Ignore OS-specific clutter
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db
@@ -116,8 +94,6 @@ ehthumbs_vista.db
 Desktop.ini
 $RECYCLE.BIN/
 *.lnk
-
-# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -126,17 +102,11 @@ Icon?
 .Spotlight-V100
 .Trashes
 *.icloud
-
-# Linux / others
 .fuse_hidden*
 .nfs*
 .directory
 
-# =========================================
-# Optional: local databases / tooling
-# =========================================
-
-# Local DBs (SQLite, LiteDB, etc.)
+# Ignore local DB & tooling
 *.db
 *.db3
 *.sdb
@@ -148,39 +118,52 @@ Icon?
 *.accdb
 *.ldf
 *.mdf
-
-# Docker / container tooling (adjust if you commit some)
 *.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Local tooling caches
-.localhistory/
-.ionide/
-.vshistory/
+# Generic editor/backup files
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
 
-# =========================================
-# Node / front-end (if any UI added later)
-# =========================================
-
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-dist/
-build/
-.cache/
-coverage/
-lerna-debug.log*
-
-# =========================================
-# Misc project-specific ignores
-# =========================================
-
-# Rider / VS solution-level metadata that is local
+# Rider/VS solution-level local metadata
 *.sln.iml
 *.sln.cache
 
+# ================
+# Ignore dotnet SDK cruft
+# ================
+global.json
+obj/
+*.csproj.user
+*.dotCover
+*.dotSettings
+*.dotCover.xml
+*.dotMemory
+*.dotTrace
+
+# Ignore net10.0 SDK junk and intermediary assets
+net10.0/
+net10.*/         # Ignore all dotnet target folders
+*.deps.json
+*.runtimeconfig.json
+*.runtimeconfig.dev.json
+*.dll            # Ignore binaries
+*.exe
+*.pdb
+
+# If you want to keep VS Code project settings, uncomment lines below:
+#!.vscode/settings.json
+#!.vscode/tasks.json
+#!.vscode/launch.json
+#!.vscode/extensions.json
+#!.vscode/*.code-snippets
+
+# Un-ignore Markdown and other files you want to keep
+!*.md
