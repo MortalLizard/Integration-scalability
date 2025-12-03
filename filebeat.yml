@@ -7,15 +7,20 @@ filebeat.inputs:
       - drop_event:
           when:
             contains:
-              docker.container.image: "filebeat"    # avoid harvesting Filebeat's own logs
+              docker.container.image: "filebeat"
       - drop_event:
           when:
             equals:
-              docker.container.name: "filebeat"    # extra safety if container name matches
+              docker.container.name: "filebeat"
 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
   index: "docker-logs-%{+yyyy.MM.dd}"
+
+# template/pattern to match the custom index above
+setup.template.name: "docker-logs"
+setup.template.pattern: "docker-logs-*"
+# setup.template.overwrite: true   # optional
 
 setup.kibana:
   host: "kibana:5601"
