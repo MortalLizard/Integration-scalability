@@ -4,6 +4,9 @@
     build:
       context: .
       dockerfile: Marketplace/Dockerfile
+    networks:
+      - default
+      - marketplace-network
     ports:
       - "8080:8080"
     environment:
@@ -17,6 +20,9 @@
     build:
       context: .
       dockerfile: Inventory/Dockerfile
+    networks:
+      - default
+      - inventory-network
     ports:
       - "8081:8081"
     environment:
@@ -30,6 +36,9 @@
     build:
       context: .
       dockerfile: Billing/Dockerfile
+    networks:
+      - default
+      - billing-network
     ports:
         - "8082:8082"
     environment:
@@ -43,6 +52,9 @@
     build:
       context: .
       dockerfile: Search/Dockerfile
+    networks:
+      - default
+      - search-network
     ports:
         - "8083:8083"
     environment:
@@ -58,6 +70,9 @@
     environment:
       MARIADB_ROOT_PASSWORD: marketplace_root
       MARIADB_DATABASE: marketplace
+    networks:
+      - default
+      - marketplace-network
     ports:
       - "3307:3306"
     volumes:
@@ -70,6 +85,9 @@
     environment:
       MARIADB_ROOT_PASSWORD: billing_root
       MARIADB_DATABASE: billing
+    networks:
+      - default
+      - billing-network
     ports:
       - "3308:3306"
     volumes:
@@ -82,6 +100,9 @@
     environment:
       MARIADB_ROOT_PASSWORD: inventory_root
       MARIADB_DATABASE: inventory
+    networks:
+      - default
+      - inventory-network
     ports:
       - "3309:3306"
     volumes:
@@ -95,6 +116,9 @@
       MONGO_INITDB_ROOT_USERNAME: search_root
       MONGO_INITDB_ROOT_PASSWORD: search_root_pw
       MONGO_INITDB_DATABASE: search
+    networks:
+      - default
+      - search-network
     ports:
       - "27018:27017"
     volumes:
@@ -111,6 +135,9 @@
       - "9200:9200"
     volumes:
       - elastic_data:/usr/share/elasticsearch/data
+    networks:
+      - default
+
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.15.0
@@ -121,6 +148,9 @@
       - "5601:5601"
     depends_on:
       - elasticsearch
+    networks:
+      - default
+  
 
 volumes:
   marketplace_data:
@@ -128,3 +158,10 @@ volumes:
   inventory_data:
   search_data:
   elastic_data:
+
+networks:
+  marketplace-network:
+  inventory-network:
+  billing-network:
+  search-network:
+  default:
