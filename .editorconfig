@@ -1,0 +1,81 @@
+# top-most EditorConfig file
+root = true
+
+############################################################
+# Global settings (applied to all files)
+############################################################
+[*]
+# Indentation
+indent_style = space
+indent_size = 4
+
+# Line endings
+end_of_line = crlf
+
+# File encoding
+charset = utf-8
+
+# Trim trailing whitespace
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+############################################################
+# C# files
+############################################################
+[*.cs]
+
+# Organize usings
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = true
+
+# New line preferences (Allman-style braces)
+csharp_new_line_before_open_brace = all
+csharp_new_line_between_query_expression_clauses = true
+csharp_preserve_single_line_blocks = false
+
+# Namespace style: file-scoped but no extra indentation
+csharp_style_namespace_declarations = file_scoped:suggestion
+csharp_indent_namespace_contents = false
+
+# Indentation
+csharp_indent_case_contents = true
+csharp_indent_labels = one_less_than_current
+csharp_indent_switch_labels = true
+csharp_indent_block_contents = true
+
+# Naming conventions
+dotnet_naming_rule.pascal_case_types.symbols = all_types
+dotnet_naming_rule.pascal_case_types.style = pascal_case
+dotnet_naming_rule.pascal_case_types.severity = suggestion
+
+dotnet_naming_symbols.all_types.applicable_kinds = class, struct, enum, interface, delegate
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+dotnet_naming_rule.camel_case_fields.symbols = private_fields
+dotnet_naming_rule.camel_case_fields.style = camel_case
+dotnet_naming_rule.camel_case_fields.severity = suggestion
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.accessibility = private
+dotnet_naming_style.camel_case.capitalization = camel_case
+
+# Expression preferences
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_after_cast = true
+csharp_space_before_colon_in_inheritance_clause = true
+
+# Prefer expression-bodied members where possible
+csharp_style_expression_bodied_methods = when_possible:suggestion
+csharp_style_expression_bodied_properties = when_possible:suggestion
+csharp_style_expression_bodied_constructors = when_possible:suggestion
+
+# Prefer explicit type for built-in types
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+
+############################################################
+# Other file types (optional)
+############################################################
+[*.xaml]
+indent_size = 2
