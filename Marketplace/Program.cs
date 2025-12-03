@@ -19,8 +19,6 @@ var summaries = new[]
 
 app.MapGet("/", (ILogger<Program> logger) =>
     {
-        logger.LogInformation("Received request for weather forecast");
-
         var forecast = Enumerable.Range(1, 5).Select(index =>
                 new WeatherForecast
                 (
