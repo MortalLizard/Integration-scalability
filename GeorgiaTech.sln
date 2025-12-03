@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Search", "Search\Search.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing", "Billing\Billing.csproj", "{7BC32163-208C-4B5E-9972-DB0B1C1B4505}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{6E26181C-8A28-4AD3-985C-D1E994E72FBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{7BC32163-208C-4B5E-9972-DB0B1C1B4505}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BC32163-208C-4B5E-9972-DB0B1C1B4505}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BC32163-208C-4B5E-9972-DB0B1C1B4505}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E26181C-8A28-4AD3-985C-D1E994E72FBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E26181C-8A28-4AD3-985C-D1E994E72FBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E26181C-8A28-4AD3-985C-D1E994E72FBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E26181C-8A28-4AD3-985C-D1E994E72FBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
