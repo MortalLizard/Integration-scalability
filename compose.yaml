@@ -1,6 +1,6 @@
 ﻿services:
   marketplace:
-    image: marketplace
+    ##image: marketplace
     build:
       context: .
       dockerfile: Marketplace/Dockerfile
@@ -16,7 +16,7 @@
       - marketplace-db
 
   inventory:
-    image: inventory
+    ##image: inventory
     build:
       context: .
       dockerfile: Inventory/Dockerfile
@@ -32,7 +32,7 @@
       - inventory-db
 
   billing:
-    image: billing
+    ##image: billing
     build:
       context: .
       dockerfile: Billing/Dockerfile
@@ -48,7 +48,7 @@
       - billing-db
 
   search:
-    image: search
+    ##image: search
     build:
       context: .
       dockerfile: Search/Dockerfile
