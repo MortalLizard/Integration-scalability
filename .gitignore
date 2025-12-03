@@ -7,6 +7,16 @@
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+
+# Configuration / intermediate
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.userprefs
+*.rsuser
+
+# Build configurations
 [Dd]ebug/
 [Rr]elease/
 [Rr]eleases/
@@ -62,9 +72,13 @@ _ReSharper*/
 !**/packages/repositories.config
 *.nuget.props
 *.nuget.targets
+
+# .NET tools / caches
 project.lock.json
 project.fragment.lock.json
+artifacts/
 *.gpState
+.nuget/
 *.cache
 *.msp
 *.msi
@@ -94,6 +108,8 @@ ehthumbs_vista.db
 Desktop.ini
 $RECYCLE.BIN/
 *.lnk
+
+# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
