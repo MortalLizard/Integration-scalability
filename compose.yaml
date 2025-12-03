@@ -1,4 +1,17 @@
 ﻿services:
+  gateway:
+    ##image: gateway
+    build:
+      context: .
+      dockerfile: Gateway/Dockerfile
+    networks:
+      - default
+    ports:
+        - "8085:8085"
+    environment:
+      - ASPNETCORE_URLS=http://+:8085
+      - ASPNETCORE_ENVIRONMENT=Development
+  
   marketplace:
     ##image: marketplace
     build:
@@ -8,7 +21,7 @@
       - default
       - marketplace-network
     ports:
-      - "8080:8080"
+      - "8080:8080" ##In production, not exposed directly
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Development
@@ -24,7 +37,7 @@
       - default
       - inventory-network
     ports:
-      - "8081:8081"
+      - "8081:8081" ##In production, not exposed directly
     environment:
       - ASPNETCORE_URLS=http://+:8081
       - ASPNETCORE_ENVIRONMENT=Development
@@ -40,7 +53,7 @@
       - default
       - billing-network
     ports:
-        - "8082:8082"
+        - "8082:8082" ##In production, not exposed directly
     environment:
       - ASPNETCORE_URLS=http://+:8082
       - ASPNETCORE_ENVIRONMENT=Development
@@ -56,7 +69,7 @@
       - default
       - search-network
     ports:
-        - "8083:8083"
+        - "8083:8083" ##In production, not exposed directly
     environment:
       - ASPNETCORE_URLS=http://+:8083
       - ASPNETCORE_ENVIRONMENT=Development
@@ -180,3 +193,5 @@ networks:
   billing-network:
   search-network:
   default:
+ 
+
