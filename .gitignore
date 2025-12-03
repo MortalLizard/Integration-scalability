@@ -1,0 +1,186 @@
+﻿# =========================================
+# .NET / C# build artifacts
+# =========================================
+
+# Build output
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Configuration / intermediate
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.userprefs
+*.rsuser
+
+# Build configurations
+[Dd]ebug/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+ipch/
+[Oo]ut/
+[Ll]ogs/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Tt]est[Rr]esults*/
+*.trx
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+*.nuget.props
+*.nuget.targets
+
+# .NET tools / caches
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.gpState
+.nuget/
+*.cache
+*.msp
+*.msi
+
+# Entity Framework Migrations metadata (generated)
+*.Designer.cs
+
+# Publish output
+publish/
+*.pubxml
+*.pubxml.user
+
+# Rider / ReSharper caches (often under .idea but keep explicit)
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# =========================================
+# IDE / Editor-specific files
+# =========================================
+
+# Visual Studio
+.vs/
+*.VC.db
+*.VC.VC.opendb
+Generated\ Files/
+
+# JetBrains Rider / IntelliJ-based
+.idea/
+*.iws
+out/
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# MonoDevelop / Xamarin Studio
+*.userprefs
+
+# Generic editor cruft
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+
+# =========================================
+# OS-specific clutter
+# =========================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+*.icloud
+
+# Linux / others
+.fuse_hidden*
+.nfs*
+.directory
+
+# =========================================
+# Optional: local databases / tooling
+# =========================================
+
+# Local DBs (SQLite, LiteDB, etc.)
+*.db
+*.db3
+*.sdb
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlitedb
+*.mdb
+*.accdb
+*.ldf
+*.mdf
+
+# Docker / container tooling (adjust if you commit some)
+*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Local tooling caches
+.localhistory/
+.ionide/
+.vshistory/
+
+# =========================================
+# Node / front-end (if any UI added later)
+# =========================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.cache/
+coverage/
+lerna-debug.log*
+
+# =========================================
+# Misc project-specific ignores
+# =========================================
+
+# Rider / VS solution-level metadata that is local
+*.sln.iml
+*.sln.cache
+
