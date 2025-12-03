@@ -3,55 +3,62 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared
+namespace Shared;
+
+public class Producer : IAsyncDisposable
 {
-    public class Producer : IAsyncDisposable
+    private readonly IChannel _channel;
+    private readonly string _queueName;
+    private readonly int _sleepMs;
+    private readonly IConnection _connection;
+
+    public Producer(string queueName, int sleepMs = 50)
     {
-        private readonly IChannel _channel;
-        private readonly string _queueName;
-        private readonly int _sleepMs;
-        private readonly IConnection _connection;
+        _sleepMs = sleepMs;
+        _queueName = queueName;
 
-        public Producer(string hostname, string queueName, int sleepMs = 50)
+        // Opret forbindelse og kanal synkront ved hjælp af async init (man kan også gøre ctor asynkron, se nedenfor)
+        var factory = new ConnectionFactory
         {
-            _sleepMs = sleepMs;
-            _queueName = queueName;
+            HostName = "rabbitmq", 
+            Password = "rabbit_pw", 
+            UserName = "rabbit",
+            VirtualHost = "/",
+            
+        };
+ 
+        _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
+        _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
 
-            // Opret forbindelse og kanal synkront ved hjælp af async init (man kan også gøre ctor asynkron, se nedenfor)
-            var factory = new ConnectionFactory { HostName = hostname };
-            _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
-            _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+        // Declare queue
+        _channel.QueueDeclareAsync(
+            queue: _queueName,
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null).GetAwaiter().GetResult();
 
-            // Declare queue
-            _channel.QueueDeclareAsync(
-                queue: _queueName,
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null).GetAwaiter().GetResult();
+        Console.WriteLine($"Producer started, attached to: localhost.{queueName}");
+    }
 
-            Console.WriteLine($"Producer started, attached to: {hostname}.{queueName}");
-        }
+    public async Task SendMessageAsync(string message)
+    {
+        var body = Encoding.UTF8.GetBytes(message);
 
-        public async Task SendMessageAsync(string message)
-        {
-            var body = Encoding.UTF8.GetBytes(message);
+        // Ny ikke-generisk overload i v7.x
+        await _channel.BasicPublishAsync(
+            exchange: "",
+            routingKey: _queueName,
+            mandatory: false,
+            body: body);
 
-            // Ny ikke-generisk overload i v7.x
-            await _channel.BasicPublishAsync(
-                exchange: "",
-                routingKey: _queueName,
-                mandatory: false,
-                body: body);
+        if (_sleepMs > 0)
+            await Task.Delay(_sleepMs);
+    }
 
-            if (_sleepMs > 0)
-                await Task.Delay(_sleepMs);
-        }
-
-        public async ValueTask DisposeAsync()
-        {
-            await _channel.DisposeAsync();
-            await _connection.DisposeAsync();
-        }
+    public async ValueTask DisposeAsync()
+    {
+        await _channel.DisposeAsync();
+        await _connection.DisposeAsync();
     }
 }

@@ -9,10 +9,6 @@
     ports:
         - "8085:8085"
     environment:
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USER=rabbit
-      - RABBITMQ_PASS=rabbit_pw
       - ASPNETCORE_URLS=http://+:8085
       - ASPNETCORE_ENVIRONMENT=Development
   

@@ -23,7 +23,7 @@ app.UseHttpsRedirection();
 
 app.MapGet("/new", async () =>
     {
-        var producer = new Producer("localhost:5672", "test");
+        var producer = new Producer("test", 0);
         await producer.SendMessageAsync("Test");
         return Results.Ok("Message sent");
 
