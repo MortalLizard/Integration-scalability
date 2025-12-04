@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Marketplace.Marketplace.Data.Repositories.Migrations
+namespace Marketplace.Data.Repositories.Migrations
 {
     [DbContext(typeof(MarketplaceDbContext))]
     partial class MarketplaceDbContextModelSnapshot : ModelSnapshot
