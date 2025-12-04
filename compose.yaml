@@ -92,6 +92,61 @@
             - "14335:1433"
         volumes:
             - inventory_sql_data:/var/opt/mssql
+    search-db:
+        image: mongo:7
+        container_name: search-db
+        restart: unless-stopped
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: search_root
+            MONGO_INITDB_ROOT_PASSWORD: search_root_pw
+            MONGO_INITDB_DATABASE: search
+        networks:
+            - default
+            - search-network
+        ports:
+            - "27018:27017"
+        volumes:
+            - search_data:/data/db
+
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+        container_name: elasticsearch
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+            - ES_JAVA_OPTS=-Xms512m -Xmx512m
+        ports:
+            - "9200:9200"
+        volumes:
+            - elastic_data:/usr/share/elasticsearch/data
+        networks:
+            - default
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:8.15.0
+        container_name: kibana
+        environment:
+            - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+        ports:
+            - "5601:5601"
+        depends_on:
+            - elasticsearch
+        networks:
+            - default
+
+    rabbitmq:
+        image: rabbitmq:3.13-management
+        container_name: rabbitmq
+        ports:
+            - "5672:5672"     # AMQP
+            - "15672:15672"   # Management UI
+        environment:
+            RABBITMQ_DEFAULT_USER: rabbit
+            RABBITMQ_DEFAULT_PASS: rabbit_pw
+        networks:
+            - default
+        restart: unless-stopped
+
 
 volumes:
     marketplace_sql_data:
