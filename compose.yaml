@@ -1,197 +1,108 @@
 ﻿services:
-  gateway:
-    ##image: gateway
-    build:
-      context: .
-      dockerfile: Gateway/Dockerfile
-    networks:
-      - default
-    ports:
-        - "8085:8085"
-    environment:
-      - ASPNETCORE_URLS=http://+:8085
-      - ASPNETCORE_ENVIRONMENT=Development
-  
-  marketplace:
-    ##image: marketplace
-    build:
-      context: .
-      dockerfile: Marketplace/Dockerfile
-    networks:
-      - default
-      - marketplace-network
-    ports:
-      - "8080:8080" ##In production, not exposed directly
-    environment:
-      - ASPNETCORE_URLS=http://+:8080
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on:
-      - marketplace-db
+    marketplace:
+        build:
+            context: .
+            dockerfile: Marketplace/Dockerfile
+        networks:
+            - default
+            - marketplace-network
+        ports:
+            - "8080:8080"
+        environment:
+            - ASPNETCORE_URLS=http://+:8080
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__Default=Server=marketplace-db;Database=marketplace;User Id=sa;Password=Marketplace@123;TrustServerCertificate=True;
+        depends_on:
+            - marketplace-db
 
-  inventory:
-    ##image: inventory
-    build:
-      context: .
-      dockerfile: Inventory/Dockerfile
-    networks:
-      - default
-      - inventory-network
-    ports:
-      - "8081:8081" ##In production, not exposed directly
-    environment:
-      - ASPNETCORE_URLS=http://+:8081
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on:
-      - inventory-db
+    inventory:
+        build:
+            context: .
+            dockerfile: Inventory/Dockerfile
+        networks:
+            - default
+            - inventory-network
+        ports:
+            - "8081:8081"
+        environment:
+            - ASPNETCORE_URLS=http://+:8081
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__Default=Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;
+        depends_on:
+            - inventory-db
 
-  billing:
-    ##image: billing
-    build:
-      context: .
-      dockerfile: Billing/Dockerfile
-    networks:
-      - default
-      - billing-network
-    ports:
-        - "8082:8082" ##In production, not exposed directly
-    environment:
-      - ASPNETCORE_URLS=http://+:8082
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on:
-      - billing-db
+    billing:
+        build:
+            context: .
+            dockerfile: Billing/Dockerfile
+        networks:
+            - default
+            - billing-network
+        ports:
+            - "8082:8082"
+        environment:
+            - ASPNETCORE_URLS=http://+:8082
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__Default=Server=billing-db;Database=billing;User Id=sa;Password=Billing@123;TrustServerCertificate=True;
+        depends_on:
+            - billing-db
 
-  search:
-    ##image: search
-    build:
-      context: .
-      dockerfile: Search/Dockerfile
-    networks:
-      - default
-      - search-network
-    ports:
-        - "8083:8083" ##In production, not exposed directly
-    environment:
-      - ASPNETCORE_URLS=http://+:8083
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on:
-      - search-db
+    marketplace-db:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        container_name: marketplace-db
+        restart: unless-stopped
+        environment:
+            ACCEPT_EULA: "Y"
+            MSSQL_SA_PASSWORD: "Marketplace@123"
+        networks:
+            - default
+            - marketplace-network
+        ports:
+            - "14333:1433"
+        volumes:
+            - marketplace_sql_data:/var/opt/mssql
 
-  marketplace-db:
-    image: mariadb:11
-    container_name: marketplace-db
-    restart: unless-stopped
-    environment:
-      MARIADB_ROOT_PASSWORD: marketplace_root
-      MARIADB_DATABASE: marketplace
-    networks:
-      - default
-      - marketplace-network
-    ports:
-      - "3307:3306"
-    volumes:
-      - marketplace_data:/var/lib/mysql
+    billing-db:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        container_name: billing-db
+        restart: unless-stopped
+        environment:
+            ACCEPT_EULA: "Y"
+            MSSQL_SA_PASSWORD: "Billing@123"
+            MSSQL_PID: "Developer"
+        networks:
+            - default
+            - billing-network
+        ports:
+            - "14334:1433"
+        volumes:
+            - billing_sql_data:/var/opt/mssql
 
-  billing-db:
-    image: mariadb:11
-    container_name: billing-db
-    restart: unless-stopped
-    environment:
-      MARIADB_ROOT_PASSWORD: billing_root
-      MARIADB_DATABASE: billing
-    networks:
-      - default
-      - billing-network
-    ports:
-      - "3308:3306"
-    volumes:
-      - billing_data:/var/lib/mysql
-
-  inventory-db:
-    image: mariadb:11
-    container_name: inventory-db
-    restart: unless-stopped
-    environment:
-      MARIADB_ROOT_PASSWORD: inventory_root
-      MARIADB_DATABASE: inventory
-    networks:
-      - default
-      - inventory-network
-    ports:
-      - "3309:3306"
-    volumes:
-      - inventory_data:/var/lib/mysql
-
-  search-db:
-    image: mongo:7
-    container_name: search-db
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: search_root
-      MONGO_INITDB_ROOT_PASSWORD: search_root_pw
-      MONGO_INITDB_DATABASE: search
-    networks:
-      - default
-      - search-network
-    ports:
-      - "27018:27017"
-    volumes:
-      - search_data:/data/db
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
-    container_name: elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
-    ports:
-      - "9200:9200"
-    volumes:
-      - elastic_data:/usr/share/elasticsearch/data
-    networks:
-      - default
-
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.15.0
-    container_name: kibana
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-    networks:
-      - default
-
-  rabbitmq:
-    #Message Broker
-    image: rabbitmq:3.13-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"     # AMQP
-      - "15672:15672"   # Management UI
-    environment:
-      RABBITMQ_DEFAULT_USER: rabbit
-      RABBITMQ_DEFAULT_PASS: rabbit_pw
-    networks:
-      - default
-    restart: unless-stopped
-
-  
+    inventory-db:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        container_name: inventory-db
+        restart: unless-stopped
+        environment:
+            ACCEPT_EULA: "Y"
+            MSSQL_SA_PASSWORD: "Inventory@123"
+        networks:
+            - default
+            - inventory-network
+        ports:
+            - "14335:1433"
+        volumes:
+            - inventory_sql_data:/var/opt/mssql
 
 volumes:
-  marketplace_data:
-  billing_data:
-  inventory_data:
-  search_data:
-  elastic_data:
+    marketplace_sql_data:
+    billing_sql_data:
+    inventory_sql_data:
+    search_data:
+    elastic_data:
 
 networks:
-  marketplace-network:
-  inventory-network:
-  billing-network:
-  search-network:
-  default:
- 
-
+    marketplace-network:
+    inventory-network:
+    billing-network:
+    search-network:
+    default:
