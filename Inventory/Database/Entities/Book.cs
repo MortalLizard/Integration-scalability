@@ -17,22 +17,22 @@ public class Book
 
     [Required]
     [MaxLength(20)]
-    public required string Isbn { get; init; }
+    public required string Isbn { get; set; }
 
     [Required]
     [MaxLength(256)]
-    public required string Title { get; init; }
+    public required string Title { get; set; }
 
     [Required]
     [MaxLength(256)]
-    public required string Author { get; init; }
+    public required string Author { get; set; }
 
     [Required]
     [Column(TypeName = "text")]
-    public required string Description { get; init; }
+    public required string Description { get; set; }
 
     [Required]
-    public DateOnly PublishedDate { get; init; }
+    public DateOnly PublishedDate { get; set; }
 
     [Required]
     public int Quantity { get; set; }
@@ -40,7 +40,7 @@ public class Book
     [Required]
     [Range(typeof(decimal), "0.01", "1000000")]
     [Column(TypeName = "decimal(18,4)")]
-    public required decimal Price { get; init; }
+    public required decimal Price { get; set; }
 
     [Required]
     public DateTime CreatedAt { get; init; }

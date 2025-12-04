@@ -4,5 +4,9 @@ namespace Inventory.Database.Services;
 
 public interface IBookService
 {
-    public Task<bool> UpdateAsync(Book book);
+    Task<List<Book>> GetAllAsync();
+    Task<Book?> GetByIdAsync(Guid id);
+    Task CreateAsync(Book book);
+    Task<bool> UpdateAsync(Book book);
+    Task DeleteAsync(Guid id);
 }

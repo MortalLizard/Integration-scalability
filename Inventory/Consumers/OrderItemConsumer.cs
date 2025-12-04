@@ -2,6 +2,7 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shared;
 using Inventory.DTOs;
@@ -11,13 +12,13 @@ namespace Inventory.Consumers;
 
 public class OrderItemConsumer : BackgroundService
 {
-    private readonly IOrderItemLogic _orderItemLogic;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private Consumer? _consumer;
     private readonly string _queueName = "inventory.order-items";
 
-    public OrderItemConsumer(IOrderItemLogic orderItemLogic)
+    public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory)
     {
-        _orderItemLogic = orderItemLogic;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -26,8 +27,13 @@ public class OrderItemConsumer : BackgroundService
             queueName: _queueName,
             handler: async (message, ct) =>
             {
-                var dto = JsonSerializer.Deserialize<OrderItemDto>(message)!;
-                await _orderItemLogic.ProcessOrderItem(dto, ct);
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var orderItemLogic = scope.ServiceProvider.GetRequiredService<IOrderItemLogic>();
+
+                    var dto = JsonSerializer.Deserialize<OrderItemDto>(message)!;
+                    await orderItemLogic.ProcessOrderItem(dto, ct);
+                }
             },
             cancellationToken: stoppingToken
         );
