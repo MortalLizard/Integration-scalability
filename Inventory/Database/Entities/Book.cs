@@ -35,6 +35,7 @@ public class Book
     public DateOnly PublishedDate { get; set; }
 
     [Required]
+    [Range(typeof(int), "0", "1000000")]
     public int Quantity { get; set; }
 
     [Required]
@@ -48,5 +49,8 @@ public class Book
     [Required]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public byte[]? RowVersion { get; set; }
+    public decimal GetTotal()
+    {
+        return Price * Quantity;
+    }
 }

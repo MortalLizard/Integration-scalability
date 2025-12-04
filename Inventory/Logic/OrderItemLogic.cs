@@ -1,15 +1,31 @@
+using Inventory.Database.Services;
 using Inventory.DTOs;
 
-namespace Inventory.Logic
+namespace Inventory.Logic;
+
+public class OrderItemLogic : IOrderItemLogic
 {
-    public class OrderItemLogic : IOrderItemLogic
+    private readonly IBookService _bookService;
+
+    public OrderItemLogic(IBookService bookService)
     {
+        _bookService = bookService;
+    }
 
-        public async Task ProcessOrderItem(OrderItemDto orderItemDto, CancellationToken ct = default)
+    public async Task ProcessOrderItem(OrderItemDto orderItemDto, CancellationToken ct = default)
+    {
+        var updatedBook = await _bookService.UpdateStockAsync(orderItemDto.ProductId, orderItemDto.QuantityChange);
+
+        if (updatedBook != null)
         {
-            // Check or adjust quantity and fetch price
+            var currentPrice = updatedBook.GetTotal();
 
-            // Produce new message based on result
+            // Build a success message and send with producer
+
+        }
+        else
+        {
+            // Build a failure message and send with producer
         }
     }
 }
