@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -19,6 +19,18 @@
 
     <ItemGroup>
       <Folder Include="obj\Debug\net10.0\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\Shared.csproj" />
+    </ItemGroup>
+
+    <!-- Folders for 3-layer architecture: Presentation, Business, Data -->
+    <ItemGroup>
+      <Folder Include="Presentation\Models\" />
+      <Folder Include="Business\Interfaces\" />
+      <Folder Include="Business\DTOs\" />
+      <Folder Include="Data\Contexts\" />
     </ItemGroup>
 
 </Project>
