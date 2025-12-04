@@ -1,36 +1,82 @@
-
 using Marketplace.Data.Entities;
+using Marketplace.Data.Repositories.DBContext;
+
+using Microsoft.EntityFrameworkCore;
+
 
 namespace Marketplace.Data.Repositories;
 
 public class BookRepository : IBookRepository
 {
-    public BookRepository()
-    {
+    private readonly MarketplaceDbContext dbContext;
 
-    }
-    public Task<Book> AddAsync(Book book, CancellationToken cancellationToken = default)
+    public BookRepository(MarketplaceDbContext dbContext)
     {
-        throw new NotImplementedException();
+        this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Book> AddAsync(Book book, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (book is null)
+        {
+            throw new ArgumentNullException(nameof(book));
+        }
+
+        if (book.Id == Guid.Empty)
+        {
+            book.Id = Guid.NewGuid();
+        }
+
+        if (book.CreatedAt == default)
+        {
+            book.CreatedAt = DateTime.UtcNow;
+        }
+
+        await dbContext.Books.AddAsync(book, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return book;
     }
 
-    public Task<IEnumerable<Book>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Book? entity = await dbContext.Books.FindAsync(new object[] { id }, cancellationToken);
+        if (entity is null)
+        {
+            return false;
+        }
+
+        dbContext.Books.Remove(entity);
+        int changed = await dbContext.SaveChangesAsync(cancellationToken);
+        return changed > 0;
     }
 
-    public Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await dbContext.Books
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<Book> UpdateAsync(Book book, CancellationToken cancellationToken = default)
+    public async Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await dbContext.Books
+            .AsNoTracking()
+            .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+    }
+
+    public async Task<Book> UpdateAsync(Book book, CancellationToken cancellationToken = default)
+    {
+        if (book is null)
+        {
+            throw new ArgumentNullException(nameof(book));
+        }
+
+        book.UpdatedAt = DateTime.UtcNow;
+
+        dbContext.Books.Update(book);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return book;
     }
 }
