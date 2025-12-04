@@ -1,17 +1,53 @@
+using System;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Shared;
+using Inventory.DTOs;
 using Inventory.Logic;
 
 namespace Inventory.Consumers;
 
-public class OrderItemConsumer(Consumer consumer, IOrderItemLogic orderItemLogic) : BackgroundService
+public class OrderItemConsumer : BackgroundService
 {
-    private readonly Consumer consumer = consumer;
-    private readonly IOrderItemLogic orderItemLogic = orderItemLogic;
+    private readonly IOrderItemLogic _orderItemLogic;
+    private Consumer? _consumer;
+    private readonly string _queueName = "inventory.order-items";
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    public OrderItemConsumer(IOrderItemLogic orderItemLogic)
     {
-        Console.WriteLine("Inventory Worker started");
+        _orderItemLogic = orderItemLogic;
+    }
 
-        return Task.CompletedTask;
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _consumer = await Consumer.CreateAsync(
+            queueName: _queueName,
+            handler: async (message, ct) =>
+            {
+                var dto = JsonSerializer.Deserialize<OrderItemDto>(message)!;
+                await _orderItemLogic.ProcessOrderItem(dto, ct);
+            },
+            cancellationToken: stoppingToken
+        );
+        try
+        {
+            await Task.Delay(Timeout.Infinite, stoppingToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        {
+        }
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_consumer is not null)
+        {
+            await _consumer.DisposeAsync();
+            _consumer = null;
+        }
+
+        await base.StopAsync(cancellationToken);
     }
 }
