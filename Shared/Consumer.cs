@@ -29,14 +29,34 @@ public class Consumer : IAsyncDisposable
     {
         var factory = new ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = "rabbitmq",
             UserName = "rabbit",
             Password = "rabbit_pw",
             VirtualHost = "/"
         };
 
-        var connection = await factory.CreateConnectionAsync(cancellationToken);
-        var channel = await connection.CreateChannelAsync(cancellationToken:cancellationToken);
+        IConnection connection = null;
+        IChannel channel = null;
+
+        // Retry logic for connection
+        int attempts = 0;
+        while (true)
+        {
+            try
+            {
+                connection = await factory.CreateConnectionAsync(cancellationToken);
+                channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+                break;
+            }
+            catch (Exception ex)
+            {
+                attempts++;
+                if (attempts > 10) throw;
+
+                Console.WriteLine($"[Consumer] RabbitMQ not ready. Retrying in 3s... (Attempt {attempts})");
+                await Task.Delay(3000, cancellationToken);
+            }
+        }
 
         await channel.QueueDeclareAsync(
             queue: queueName,
@@ -46,11 +66,7 @@ public class Consumer : IAsyncDisposable
             arguments: null,
             cancellationToken: cancellationToken);
 
-        await channel.BasicQosAsync(
-            prefetchSize: 0,
-            prefetchCount: 1,
-            global: false,
-            cancellationToken: cancellationToken);
+        await channel.BasicQosAsync(0, 1, false, cancellationToken);
 
         var asyncConsumer = new AsyncEventingBasicConsumer(channel);
 
@@ -62,13 +78,21 @@ public class Consumer : IAsyncDisposable
                 return;
             }
 
-            var msg = Encoding.UTF8.GetString(ea.Body.ToArray());
+            try
+            {
+                var msg = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-            await handler(msg, cancellationToken);
+                await handler(msg, cancellationToken);
 
-            await channel.BasicAckAsync(ea.DeliveryTag, false, cancellationToken);
+                await channel.BasicAckAsync(ea.DeliveryTag, false, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing message: {ex.Message}");
+
+                await channel.BasicAckAsync(ea.DeliveryTag, false, cancellationToken);
+            }
         };
-
 
         var consumerTag = await channel.BasicConsumeAsync(
             queue: queueName,
@@ -89,3 +113,4 @@ public class Consumer : IAsyncDisposable
         await _connection.DisposeAsync();
     }
 }
+

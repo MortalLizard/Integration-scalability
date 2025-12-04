@@ -11,7 +11,7 @@ public record OrderItemDto(
 
     [property: JsonPropertyName("quantityChange")]
     [property: Required]
-    [property: Range(typeof(int), "-999999999", "999999999")]
+    [property: Range(typeof(int), "1", "999999999")]
     int QuantityChange,
 
     [property: JsonPropertyName("productId")]

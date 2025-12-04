@@ -8,13 +8,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Setup database connection
 builder.Services.AddDbContext<InventoryDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryDatabase")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("InventoryDatabase") ?? "Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;",
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 10,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorNumbersToAdd: null)
+    ));
 
 // Add MVC services
 builder.Services.AddControllersWithViews();
 
-// Register consumer
+// Register consumer as a hosted service
 builder.Services.AddHostedService<OrderItemConsumer>();
+
+// Register Producer as a Singleton so the connection is shared
+builder.Services.AddSingleton<Shared.Producer>();
 
 // Register inventory logic
 builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();

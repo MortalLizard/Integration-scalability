@@ -71,13 +71,13 @@ public class BookService : IBookService
 
             if (book == null) return null;
 
-            if (book.Quantity + quantityChange < 0)
+            if (book.Quantity - quantityChange < 0)
             {
                 await transaction.RollbackAsync();
                 return null;
             }
 
-            book.Quantity += quantityChange;
+            book.Quantity -= quantityChange;
             book.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
