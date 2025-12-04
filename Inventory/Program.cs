@@ -1,3 +1,4 @@
+using Inventory.Consumers;
 using Inventory.Database.Services;
 using Inventory.Database;
 using Inventory.Logic;
@@ -9,7 +10,8 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddDbContext<InventoryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryDatabase")));
 
-// Register producer & consumer
+// Register consumer
+builder.Services.AddHostedService<OrderItemConsumer>();
 
 // Register inventory logic
 builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
