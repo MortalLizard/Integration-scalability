@@ -1,14 +1,15 @@
+using System.Text.Json;
+
 using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var rabbitHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
-var rabbitUser = Environment.GetEnvironmentVariable("RABBITMQ_USER");
-var rabbitPass = Environment.GetEnvironmentVariable("RABBITMQ_PASS");
-
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+});
 
 var app = builder.Build();
 
@@ -20,14 +21,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapControllers();
 
-app.MapGet("/new", async () =>
-    {
-        var producer = new Producer("test", 0);
-        await producer.SendMessageAsync("Test");
-        return Results.Ok("Message sent");
-
-    });
 
 app.Run();
 
