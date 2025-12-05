@@ -8,7 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="JsonSchema.Net" Version="7.4.0" />
+        <PackageReference Include="JsonSchema.Net.Generation" Version="5.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.0-rc.1.25458.5" />
     </ItemGroup>
 
     <ItemGroup>
@@ -19,6 +22,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Shared\Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\" />
     </ItemGroup>
 
 </Project>

@@ -15,6 +15,18 @@
         depends_on:
             - marketplace-db
 
+    gateway:
+        build:
+            context: .
+            dockerfile: Gateway/Dockerfile
+        networks:
+            - default
+        ports:
+            - "8085:8085"
+        environment:
+            - ASPNETCORE_URLS=http://+:8085
+            - ASPNETCORE_ENVIRONMENT=Development
+
     inventory:
         build:
             context: .
