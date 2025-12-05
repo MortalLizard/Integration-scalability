@@ -9,6 +9,10 @@ public sealed record OrderItemProcess(
     [property: Required]
     Guid OrderId,
 
+    [property: JsonPropertyName("email")]
+    [property: Required]
+    string Email,
+
     [property: JsonPropertyName("productId")]
     [property: Required]
     Guid ProductId,

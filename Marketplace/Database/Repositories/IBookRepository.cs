@@ -1,13 +1,13 @@
 using Marketplace.Database.Entities;
 
-namespace Marketplace.Data.Repositories;
+namespace Marketplace.Database.Repositories;
 
 public interface IBookRepository
 {
     /// <summary>
     /// Adds a new book to the repository and returns the created entity.
     /// </summary>
-    Task<Book?> AddAsync(Book book, CancellationToken cancellationToken = default);
+    Task<Book?> CreateAsync(Book book, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a book by its identifier, or null if not found.
@@ -23,6 +23,11 @@ public interface IBookRepository
     /// Updates an existing book and returns the updated entity.
     /// </summary>
     Task<Book> UpdateAsync(Book book, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates the IsActive flag of a book by its identifier.
+    /// </summary>
+    Task<Book?> UpdateIsActiveAsync(Guid id);
 
     /// <summary>
     /// Deletes a book by identifier. Returns true if a record was deleted.

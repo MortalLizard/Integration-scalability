@@ -1,21 +1,35 @@
-using Inventory.Consumers;
-
+using System.Text.Json;
 using Marketplace.Business.Interfaces;
 using Marketplace.Contracts.Commands;
+using Marketplace.Contracts.Events;
+using Marketplace.Database.Repositories;
 
 namespace Marketplace.Business.Services;
 
-public class OrderItemLogic(Shared.Producer producer) : IOrderItemLogic
+public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer producer) : IOrderItemLogic
 {
-
-    private readonly Shared.Producer _producer = producer;
+    private const string ResponseQueueName = "marketplace.order-item.processed";
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        //Change set active and return the updated book
+        var updatedBook = await bookRepository.UpdateIsActiveAsync(orderItemProcess.ProductId);
 
-        //Fetch price from updated book
+        if(updatedBook == null)
+        {
+            // Handle negative outcome
+        }
 
-        // Use _producer to handle negative/positive scenarios
+        var responsePayload = new OrderItemProcessed(
+            OrderId: orderItemProcess.OrderId,
+            Email: orderItemProcess.Email,
+            ProductId: orderItemProcess.ProductId,
+            Price: updatedBook.Price,
+            Portion: orderItemProcess.Portion,
+            Timestamp: DateTime.UtcNow
+        );
+
+        var jsonMessage = JsonSerializer.Serialize(responsePayload);
+
+        await producer.SendMessageAsync(ResponseQueueName, jsonMessage);
     }
 }

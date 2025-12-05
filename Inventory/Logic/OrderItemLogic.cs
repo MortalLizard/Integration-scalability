@@ -5,49 +5,31 @@ using Inventory.Database.Services;
 
 namespace Inventory.Logic;
 
-public class OrderItemLogic : IOrderItemLogic
+public class OrderItemLogic(IBookService bookService, Shared.Producer producer) : IOrderItemLogic
 {
-    private readonly IBookService _bookService;
-    private readonly Shared.Producer _producer;
-
-    private const string ResponseQueueName = "inventory.updated";
-
-    public OrderItemLogic(IBookService bookService, Shared.Producer producer)
-    {
-        _bookService = bookService;
-        _producer = producer;
-    }
+    private const string ResponseQueueName = "inventory.order-item.processed";
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        var updatedBook = await _bookService.UpdateStockAsync(orderItemProcess.ProductId, orderItemProcess.QuantityChange);
+        var updatedBook = await bookService.UpdateStockAsync(orderItemProcess.ProductId, orderItemProcess.QuantityChange);
 
-        object responsePayload;
+        if (null == updatedBook)
+        {
+            //Failover scenario
+        }
 
-        if (updatedBook != null)
-        {
-            responsePayload = new OrderItemProcessSucceeded(
-                OrderId: orderItemProcess.OrderId,
-                ProductId: orderItemProcess.ProductId,
-                Quantity: orderItemProcess.QuantityChange,
-                Price: updatedBook.Price,
-                Portion: orderItemProcess.Portion,
-                Timestamp: DateTime.UtcNow
-            );
-        }
-        else
-        {
-            responsePayload = new OrderItemProcessFailed(
-                OrderId: orderItemProcess.OrderId,
-                ProductId: orderItemProcess.ProductId,
-                Quantity: orderItemProcess.QuantityChange,
-                Portion: orderItemProcess.Portion,
-                Timestamp: DateTime.UtcNow
-            );
-        }
+        var responsePayload = new OrderItemProcessed(
+            OrderId: orderItemProcess.OrderId,
+            Email: orderItemProcess.Email,
+            ProductId: orderItemProcess.ProductId,
+            Quantity: orderItemProcess.QuantityChange,
+            Price: updatedBook.Price,
+            Portion: orderItemProcess.Portion,
+            Timestamp: DateTime.UtcNow
+        );
 
         var jsonMessage = JsonSerializer.Serialize(responsePayload);
 
-        await _producer.SendMessageAsync(ResponseQueueName, jsonMessage);
+        await producer.SendMessageAsync(ResponseQueueName, jsonMessage);
     }
 }

@@ -9,6 +9,10 @@ public sealed record OrderItemProcess(
     [property: Required]
     Guid OrderId,
 
+    [property: JsonPropertyName("email")]
+    [property: Required]
+    string Email,
+
     [property: JsonPropertyName("quantityChange")]
     [property: Required]
     [property: Range(typeof(int), "1", "999999999")]

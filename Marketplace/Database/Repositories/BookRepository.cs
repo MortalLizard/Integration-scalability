@@ -2,7 +2,7 @@ using Marketplace.Data.Repositories.DBContext;
 using Marketplace.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Marketplace.Data.Repositories;
+namespace Marketplace.Database.Repositories;
 
 public class BookRepository : IBookRepository
 {
@@ -13,13 +13,8 @@ public class BookRepository : IBookRepository
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public async Task<Book?> AddAsync(Book book, CancellationToken cancellationToken = default)
+    public async Task<Book?> CreateAsync(Book book, CancellationToken cancellationToken = default)
     {
-        if (book.Id == Guid.Empty)
-        {
-            book.Id = Guid.NewGuid();
-        }
-
         if (book.CreatedAt == default)
         {
             book.CreatedAt = DateTime.UtcNow;
@@ -71,5 +66,22 @@ public class BookRepository : IBookRepository
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return book;
+    }
+
+    public async Task<Book?> UpdateIsActiveAsync(Guid id)
+    {
+        var updated = await dbContext.Books
+            .FromSqlInterpolated($"""
+                                      UPDATE [Books]
+                                      SET
+                                          [IsActive] = false,
+                                          [UpdatedAt] = {DateTime.UtcNow}
+                                      OUTPUT inserted.*
+                                      WHERE [Id] = {id} AND [IsActive] = true;
+                                  """)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        return updated;
     }
 }
