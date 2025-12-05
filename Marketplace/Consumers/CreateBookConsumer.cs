@@ -1,17 +1,17 @@
 using System.Text.Json;
-using Inventory.Contracts.Commands;
+using Marketplace.Business.Interfaces;
+using Marketplace.DTOs;
 using Shared;
-using Inventory.Logic;
 
 namespace Inventory.Consumers;
 
-public class OrderItemConsumer : BackgroundService
+public class CreateBookConsumer : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private Consumer? _consumer;
-    private readonly string _queueName = "inventory.order-items";
+    private readonly string _queueName = "marketplace.create-book";
 
-    public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory)
+    public CreateBookConsumer(IServiceScopeFactory serviceScopeFactory)
     {
         _serviceScopeFactory = serviceScopeFactory;
     }
@@ -24,10 +24,10 @@ public class OrderItemConsumer : BackgroundService
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var orderItemLogic = scope.ServiceProvider.GetRequiredService<IOrderItemLogic>();
+                    var createBookLogic = scope.ServiceProvider.GetRequiredService<ICreateBookLogic>();
 
-                    var dto = JsonSerializer.Deserialize<OrderItemProcess>(message)!;
-                    await orderItemLogic.ProcessOrderItem(dto, ct);
+                    var dto = JsonSerializer.Deserialize<CreateBook>(message)!;
+                    await createBookLogic.CreateBook(dto, ct);
                 }
             },
             cancellationToken: stoppingToken

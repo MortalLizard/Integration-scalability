@@ -40,14 +40,14 @@ public class Book
 
     [Required]
     [Range(typeof(decimal), "0.01", "1000000")]
-    [Column(TypeName = "decimal(18,4)")]
+    [Column(TypeName = "decimal(18,2)")]
     public required decimal Price { get; set; }
 
     [Required]
-    public DateTime CreatedAt { get; init; }
+    public required DateTime CreatedAt { get; init; }
 
     [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public required DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public decimal GetTotal()
     {

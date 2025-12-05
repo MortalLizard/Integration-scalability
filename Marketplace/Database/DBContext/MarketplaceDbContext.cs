@@ -1,7 +1,5 @@
-using System;
 using Microsoft.EntityFrameworkCore;
-using Marketplace.Data.Entities;
-using Marketplace.Data.Repositories;
+using Marketplace.Database.Entities;
 
 namespace Marketplace.Data.Repositories.DBContext;
 
@@ -29,10 +27,11 @@ public class MarketplaceDbContext : DbContext
             entity.Property(b => b.Author)
                 .HasMaxLength(256);
 
-            entity.Property(b => b.ISBN)
+            entity.Property(b => b.Isbn)
                 .HasMaxLength(50);
 
             entity.Property(b => b.Price)
+                .IsRequired()
                 .HasPrecision(18, 2);
 
             entity.Property(b => b.PublishedDate);
@@ -42,9 +41,11 @@ public class MarketplaceDbContext : DbContext
             entity.Property(b => b.CreatedAt)
                 .IsRequired();
 
-            entity.Property(b => b.UpdatedAt);
+            entity.Property(b => b.UpdatedAt)
+                .IsRequired();
 
-            entity.Property(b => b.IsActive);
+            entity.Property(b => b.IsActive)
+                .IsRequired();
         });
     }
 }

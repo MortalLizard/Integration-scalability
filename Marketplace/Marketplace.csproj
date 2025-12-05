@@ -73,7 +73,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Repositories\Migrations\" />
+      <Folder Include="Database\Migrations\" />
       <Folder Include="obj\Debug\net10.0\" />
     </ItemGroup>
 
@@ -84,9 +84,6 @@
     <!-- Folders for 3-layer architecture: Presentation, Business, Data -->
     <ItemGroup>
       <Folder Include="Presentation\Models\" />
-      <Folder Include="Business\Interfaces\" />
-      <Folder Include="Business\DTOs\" />
-      <Folder Include="Data\Contexts\" />
     </ItemGroup>
 
 </Project>

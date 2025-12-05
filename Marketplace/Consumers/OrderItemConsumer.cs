@@ -1,7 +1,9 @@
 using System.Text.Json;
-using Inventory.Contracts.Commands;
+
+using Marketplace.Business.Interfaces;
+using Marketplace.DTOs;
+
 using Shared;
-using Inventory.Logic;
 
 namespace Inventory.Consumers;
 
@@ -9,7 +11,7 @@ public class OrderItemConsumer : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private Consumer? _consumer;
-    private readonly string _queueName = "inventory.order-items";
+    private readonly string _queueName = "marketplace.order-items";
 
     public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory)
     {

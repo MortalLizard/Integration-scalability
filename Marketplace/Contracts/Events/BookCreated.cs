@@ -3,12 +3,12 @@ using Marketplace.Contracts.Dtos;
 
 namespace Marketplace.Contracts.Events;
 
-public sealed class BookUpdatedEvent
+public sealed record BookCreated
 {
     public required BookDto Book { get; set; }
     public required DateTime OccurredAt { get; set; }
 
-    public BookUpdatedEvent()
+    public BookCreated()
     {
         OccurredAt = DateTime.UtcNow;
     }

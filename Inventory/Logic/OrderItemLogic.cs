@@ -1,6 +1,7 @@
 using System.Text.Json;
+using Inventory.Contracts.Commands;
+using Inventory.Contracts.Events;
 using Inventory.Database.Services;
-using Inventory.DTOs;
 
 namespace Inventory.Logic;
 
@@ -17,43 +18,36 @@ public class OrderItemLogic : IOrderItemLogic
         _producer = producer;
     }
 
-    public async Task ProcessOrderItem(OrderItemDto orderItemDto, CancellationToken ct = default)
+    public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        var updatedBook = await _bookService.UpdateStockAsync(orderItemDto.ProductId, orderItemDto.QuantityChange);
+        var updatedBook = await _bookService.UpdateStockAsync(orderItemProcess.ProductId, orderItemProcess.QuantityChange);
 
         object responsePayload;
 
         if (updatedBook != null)
         {
-            responsePayload = new
-            {
-                Type = "InventoryReserved",
-                OrderId = orderItemDto.OrderId,
-                ProductId = orderItemDto.ProductId,
-                Quantity = orderItemDto.QuantityChange,
-                Price = updatedBook.Price,
-                Success = true,
-                Timestamp = DateTime.UtcNow
-            };
+            responsePayload = new OrderItemProcessSucceeded(
+                OrderId: orderItemProcess.OrderId,
+                ProductId: orderItemProcess.ProductId,
+                Quantity: orderItemProcess.QuantityChange,
+                Price: updatedBook.Price,
+                Portion: orderItemProcess.Portion,
+                Timestamp: DateTime.UtcNow
+            );
         }
         else
         {
-            responsePayload = new
-            {
-                Type = "InventoryReservationFailed",
-                OrderId = orderItemDto.OrderId,
-                ProductId = orderItemDto.ProductId,
-                Quantity = orderItemDto.QuantityChange,
-                Success = false,
-                Reason = "Insufficient Stock or Invalid Product",
-                Timestamp = DateTime.UtcNow
-            };
+            responsePayload = new OrderItemProcessFailed(
+                OrderId: orderItemProcess.OrderId,
+                ProductId: orderItemProcess.ProductId,
+                Quantity: orderItemProcess.QuantityChange,
+                Portion: orderItemProcess.Portion,
+                Timestamp: DateTime.UtcNow
+            );
         }
 
-        // Serialize object to JSON string because Producer expects a string
         var jsonMessage = JsonSerializer.Serialize(responsePayload);
 
-        // Use the injected producer to send the message
         await _producer.SendMessageAsync(ResponseQueueName, jsonMessage);
     }
 }

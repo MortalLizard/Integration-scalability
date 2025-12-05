@@ -1,8 +1,6 @@
-using Marketplace.Data.Entities;
 using Marketplace.Data.Repositories.DBContext;
-
+using Marketplace.Database.Entities;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Marketplace.Data.Repositories;
 

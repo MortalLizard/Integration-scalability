@@ -1,9 +1,8 @@
-using Inventory.Contracts.Commands;
+using Marketplace.DTOs;
 
-namespace Inventory.Logic;
+namespace Marketplace.Business.Interfaces;
 
 public interface IOrderItemLogic
 {
     public Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default);
-
 }
