@@ -9,12 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Setup database connection
 builder.Services.AddDbContext<InventoryDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("InventoryDatabase") ?? "Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;",
-        sqlOptions => sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 10,
-            maxRetryDelay: TimeSpan.FromSeconds(5),
-            errorNumbersToAdd: null)
-    ));
+        builder.Configuration.GetConnectionString("InventoryDatabase") ?? "Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;"));
 
 // Add MVC services
 builder.Services.AddControllersWithViews();

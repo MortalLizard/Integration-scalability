@@ -18,5 +18,4 @@ public class MarketplaceBookDto
     public DateTime PublishedDate { get; set; }
     [JsonPropertyName("description")]
     public string? Description { get; set; }
-
 }

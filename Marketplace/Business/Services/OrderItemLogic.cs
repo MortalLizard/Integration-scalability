@@ -1,5 +1,5 @@
 using Marketplace.Business.Interfaces;
-using Marketplace.DTOs;
+using Marketplace.Contracts.Commands;
 
 namespace Marketplace.Business.Services;
 

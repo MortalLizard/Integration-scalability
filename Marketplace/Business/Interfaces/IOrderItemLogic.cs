@@ -1,4 +1,4 @@
-using Marketplace.DTOs;
+using Marketplace.Contracts.Commands;
 
 namespace Marketplace.Business.Interfaces;
 

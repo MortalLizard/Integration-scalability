@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Marketplace.DTOs;
+namespace Marketplace.Contracts.Commands;
 
 public sealed record OrderItemProcess(
 

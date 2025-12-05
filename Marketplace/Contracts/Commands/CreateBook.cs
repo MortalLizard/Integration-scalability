@@ -1,23 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Marketplace.DTOs;
+namespace Marketplace.Contracts.Commands;
 
 public sealed record CreateBook(
-
-    [property: JsonPropertyName("id")]
-    [property: Required]
-    Guid Id,
-
     [property: JsonPropertyName("title")]
     [property: Required]
     string Title,
 
     [property: JsonPropertyName("author")]
-    string? Author,
+    [property: Required]
+    string Author,
 
     [property: JsonPropertyName("isbn")]
-    string? Isbn,
+    [property: Required]
+    string Isbn,
 
     [property: JsonPropertyName("price")]
     [property: Range(typeof(decimal), "0", "999999999")]
@@ -25,7 +22,8 @@ public sealed record CreateBook(
     decimal Price,
 
     [property: JsonPropertyName("publishedDate")]
-    DateTime? PublishedDate,
+    [property: Required]
+    DateTime PublishedDate,
 
     [property: JsonPropertyName("description")]
     string? Description

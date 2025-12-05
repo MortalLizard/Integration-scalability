@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Marketplace.Business.Interfaces;
-using Marketplace.DTOs;
+using Marketplace.Contracts.Commands;
+
 using Shared;
 
 namespace Inventory.Consumers;

@@ -29,7 +29,7 @@ public class Consumer : IAsyncDisposable
     {
         var factory = new ConnectionFactory
         {
-            HostName = "rabbitmq",
+            HostName = "localhost",
             UserName = "rabbit",
             Password = "rabbit_pw",
             VirtualHost = "/"
