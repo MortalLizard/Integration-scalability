@@ -82,8 +82,5 @@
     </ItemGroup>
 
     <!-- Folders for 3-layer architecture: Presentation, Business, Data -->
-    <ItemGroup>
-      <Folder Include="Presentation\Models\" />
-    </ItemGroup>
 
 </Project>

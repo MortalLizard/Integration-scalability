@@ -13,13 +13,8 @@ public class BookRepository : IBookRepository
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public async Task<Book> AddAsync(Book book, CancellationToken cancellationToken = default)
+    public async Task<Book?> AddAsync(Book book, CancellationToken cancellationToken = default)
     {
-        if (book is null)
-        {
-            throw new ArgumentNullException(nameof(book));
-        }
-
         if (book.Id == Guid.Empty)
         {
             book.Id = Guid.NewGuid();
@@ -31,14 +26,14 @@ public class BookRepository : IBookRepository
         }
 
         await dbContext.Books.AddAsync(book, cancellationToken);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        int entryCount = await dbContext.SaveChangesAsync(cancellationToken);
 
-        return book;
+        return entryCount > 0 ? book : null;
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        Book? entity = await dbContext.Books.FindAsync(new object[] { id }, cancellationToken);
+        var entity = await dbContext.Books.FindAsync([id], cancellationToken);
         if (entity is null)
         {
             return false;

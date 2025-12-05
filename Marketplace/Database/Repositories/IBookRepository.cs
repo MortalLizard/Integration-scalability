@@ -7,7 +7,7 @@ public interface IBookRepository
     /// <summary>
     /// Adds a new book to the repository and returns the created entity.
     /// </summary>
-    Task<Book> AddAsync(Book book, CancellationToken cancellationToken = default);
+    Task<Book?> AddAsync(Book book, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a book by its identifier, or null if not found.

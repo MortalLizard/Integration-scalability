@@ -25,6 +25,8 @@ public class BookService : IBookService
 
     public async Task CreateAsync(Book book)
     {
+        book.CreatedAt = DateTime.UtcNow;
+
         _context.Books.Add(book);
         await _context.SaveChangesAsync();
     }

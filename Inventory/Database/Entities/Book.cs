@@ -44,10 +44,10 @@ public class Book
     public required decimal Price { get; set; }
 
     [Required]
-    public required DateTime CreatedAt { get; init; }
+    public required DateTime CreatedAt { get; set; }
 
     [Required]
-    public required DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public required DateTime UpdatedAt { get; set; }
 
     public decimal GetTotal()
     {

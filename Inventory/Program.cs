@@ -20,7 +20,7 @@ builder.Services.AddHostedService<OrderItemConsumer>();
 // Register Producer as a Singleton so the connection is shared
 builder.Services.AddSingleton<Shared.Producer>();
 
-// Register inventory logic
+// Register inventory logicBookRepository
 builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
 builder.Services.AddScoped<IBookService, BookService>();
 
