@@ -3,13 +3,8 @@ using Marketplace.Database.Entities;
 
 namespace Marketplace.Database.DBContext;
 
-public class MarketplaceDbContext : DbContext
+public class MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options) : DbContext(options)
 {
-    public MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<Book> Books { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

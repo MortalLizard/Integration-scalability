@@ -4,27 +4,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory.Controllers.Web;
 
-public class BookController : Controller
+public class BookController(IBookService bookService) : Controller
 {
-    private readonly IBookService _bookService;
-
-    public BookController(IBookService bookService)
-    {
-        _bookService = bookService;
-    }
-
     // GET: Book
     public async Task<IActionResult> Index()
     {
-        var books = await _bookService.GetAllAsync();
+        var books = await bookService.GetAllAsync();
+
         return View(books);
     }
 
     // GET: Book/Details/5
     public async Task<IActionResult> Details(Guid id)
     {
-        var book = await _bookService.GetByIdAsync(id);
+        var book = await bookService.GetByIdAsync(id);
+
         if (book == null) return NotFound();
+
         return View(book);
     }
 
@@ -39,19 +35,20 @@ public class BookController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Book book)
     {
-        if (ModelState.IsValid)
-        {
-            await _bookService.CreateAsync(book);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(book);
+        if (!ModelState.IsValid) return View(book);
+
+        await bookService.CreateAsync(book);
+
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: Book/Edit/5
     public async Task<IActionResult> Edit(Guid id)
     {
-        var book = await _bookService.GetByIdAsync(id);
+        var book = await bookService.GetByIdAsync(id);
+
         if (book == null) return NotFound();
+
         return View(book);
     }
 
@@ -62,19 +59,20 @@ public class BookController : Controller
     {
         if (id != book.Id) return NotFound();
 
-        if (ModelState.IsValid)
-        {
-            await _bookService.UpdateAsync(book);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(book);
+        if (!ModelState.IsValid) return View(book);
+
+        await bookService.UpdateAsync(book);
+
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: Book/Delete/5
     public async Task<IActionResult> Delete(Guid id)
     {
-        var book = await _bookService.GetByIdAsync(id);
+        var book = await bookService.GetByIdAsync(id);
+
         if (book == null) return NotFound();
+
         return View(book);
     }
 
@@ -83,7 +81,8 @@ public class BookController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bookService.DeleteAsync(id);
+        await bookService.DeleteAsync(id);
+
         return RedirectToAction(nameof(Index));
     }
 }

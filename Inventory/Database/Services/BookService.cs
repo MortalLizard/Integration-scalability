@@ -1,26 +1,18 @@
-using System.Data;
 using Inventory.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Database.Services;
 
-public class BookService : IBookService
+public class BookService(InventoryDbContext context) : IBookService
 {
-    private readonly InventoryDbContext _context;
-
-    public BookService(InventoryDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<List<Book>> GetAllAsync()
     {
-        return await _context.Books.AsNoTracking().ToListAsync();
+        return await context.Books.AsNoTracking().ToListAsync();
     }
 
     public async Task<Book?> GetByIdAsync(Guid id)
     {
-        return await _context.Books.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
+        return await context.Books.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
     }
 
     public async Task CreateAsync(Book book)
@@ -28,13 +20,13 @@ public class BookService : IBookService
         book.CreatedAt = DateTime.UtcNow;
         book.UpdatedAt = DateTime.UtcNow;
 
-        _context.Books.Add(book);
-        await _context.SaveChangesAsync();
+        context.Books.Add(book);
+        await context.SaveChangesAsync();
     }
 
     public async Task<bool> UpdateAsync(Book book)
     {
-        int rows = await _context.Database.ExecuteSqlInterpolatedAsync($"""
+        int rows = await context.Database.ExecuteSqlInterpolatedAsync($"""
             UPDATE [Books]
             SET
                 [Isbn] = {book.Isbn},
@@ -53,7 +45,7 @@ public class BookService : IBookService
 
     public async Task<Book?> UpdateStockAsync(Guid id, int quantityChange)
     {
-        var updated = await _context.Books
+        var updated = await context.Books
             .FromSqlInterpolated($"""
                                       UPDATE [Books]
                                       SET
@@ -70,7 +62,7 @@ public class BookService : IBookService
 
     public async Task<bool> DeleteAsync(Guid id)
     {
-        var rows = await _context.Database.ExecuteSqlInterpolatedAsync($@"
+        int rows = await context.Database.ExecuteSqlInterpolatedAsync($@"
             DELETE FROM [Books]
             WHERE [Id] = {id};
         ");

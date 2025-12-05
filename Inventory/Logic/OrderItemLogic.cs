@@ -7,7 +7,7 @@ namespace Inventory.Logic;
 
 public class OrderItemLogic(IBookService bookService, Shared.Producer producer) : IOrderItemLogic
 {
-    private const string ResponseQueueName = "inventory.order-item.processed";
+    private const string responseQueueName = "inventory.order-item.processed";
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
@@ -30,6 +30,6 @@ public class OrderItemLogic(IBookService bookService, Shared.Producer producer) 
 
         var jsonMessage = JsonSerializer.Serialize(responsePayload);
 
-        await producer.SendMessageAsync(ResponseQueueName, jsonMessage);
+        await producer.SendMessageAsync(responseQueueName, jsonMessage);
     }
 }
