@@ -53,5 +53,43 @@ namespace Gateway.Controllers
             return Ok();
         }
 
+        [HttpPost("neworder")]
+        public IActionResult NewOrder([FromBody] JsonElement jsonElement)
+        {
+            // validation input using schema validation
+            var errors = OrderSchema.Instance.Validate(jsonElement);
+            if (errors is not null)
+            {
+                return BadRequest(new { message = "Invalid payload", errors });
+            }
+
+            OrderDto? dto;
+            try
+            {
+                dto = JsonSerializer.Deserialize<OrderDto>(
+                    jsonElement.GetRawText(),
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                if (dto is null)
+                    return BadRequest(new { message = "Payload deserialized to null" });
+
+                dto.OrderId = Guid.NewGuid().ToString();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+
+            var outboundJson = JsonSerializer.Serialize(dto);
+            //send it
+            var producer = new Producer();
+            producer.SendMessageAsync("orders", outboundJson).GetAwaiter().GetResult();
+
+            return Ok(outboundJson);
+        }
+
     }
 }
