@@ -10,7 +10,7 @@ public class OrderItemConsumer : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private Consumer? _consumer;
-    private readonly string _queueName = "marketplace.order-items";
+    private readonly string _queueName = "marketplace.order-item.process";
 
     public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory)
     {
