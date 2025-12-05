@@ -28,7 +28,7 @@ public class BookRepository(MarketplaceDbContext dbContext) : IBookRepository
             .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
     }
 
-    public async Task<Book?> UpdateIsActiveAsync(Guid id)
+    public async Task<Book?> UpdateIsActiveAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var updated = await dbContext.Books
             .FromSqlInterpolated($"""

@@ -6,30 +6,22 @@ using Shared;
 
 namespace Marketplace.Consumers;
 
-public class OrderItemConsumer : BackgroundService
+public class OrderItemConsumer(IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private Consumer? _consumer;
-    private readonly string _queueName = "marketplace.order-item.process";
-
-    public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactory;
-    }
+    private Consumer? consumer;
+    private const string queueName = "marketplace.order-item.process";
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _consumer = await Consumer.CreateAsync(
-            queueName: _queueName,
+        consumer = await Consumer.CreateAsync(
+            queueName: queueName,
             handler: async (message, ct) =>
             {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var orderItemLogic = scope.ServiceProvider.GetRequiredService<IOrderItemLogic>();
+                using var scope = serviceScopeFactory.CreateScope();
+                var orderItemLogic = scope.ServiceProvider.GetRequiredService<IOrderItemLogic>();
 
-                    var dto = JsonSerializer.Deserialize<OrderItemProcess>(message)!;
-                    await orderItemLogic.ProcessOrderItem(dto, ct);
-                }
+                var dto = JsonSerializer.Deserialize<OrderItemProcess>(message)!;
+                await orderItemLogic.ProcessOrderItem(dto, ct);
             },
             cancellationToken: stoppingToken
         );
@@ -44,10 +36,10 @@ public class OrderItemConsumer : BackgroundService
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (_consumer is not null)
+        if (consumer is not null)
         {
-            await _consumer.DisposeAsync();
-            _consumer = null;
+            await consumer.DisposeAsync();
+            consumer = null;
         }
 
         await base.StopAsync(cancellationToken);

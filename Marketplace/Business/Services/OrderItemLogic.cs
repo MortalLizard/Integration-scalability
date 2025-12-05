@@ -12,7 +12,7 @@ public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer prod
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        var updatedBook = await bookRepository.UpdateIsActiveAsync(orderItemProcess.ProductId);
+        var updatedBook = await bookRepository.UpdateIsActiveAsync(orderItemProcess.ProductId, ct);
 
         if(updatedBook == null)
         {

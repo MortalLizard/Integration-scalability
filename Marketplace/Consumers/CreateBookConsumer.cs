@@ -5,30 +5,22 @@ using Shared;
 
 namespace Marketplace.Consumers;
 
-public class CreateBookConsumer : BackgroundService
+public class CreateBookConsumer(IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private Consumer? _consumer;
-    private readonly string _queueName = "marketplace.create-book";
-
-    public CreateBookConsumer(IServiceScopeFactory serviceScopeFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactory;
-    }
+    private Consumer? consumer;
+    private const string queueName = "marketplace.create-book";
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _consumer = await Consumer.CreateAsync(
-            queueName: _queueName,
+        consumer = await Consumer.CreateAsync(
+            queueName: queueName,
             handler: async (message, ct) =>
             {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var createBookLogic = scope.ServiceProvider.GetRequiredService<ICreateBookLogic>();
+                using var scope = serviceScopeFactory.CreateScope();
+                var createBookLogic = scope.ServiceProvider.GetRequiredService<ICreateBookLogic>();
 
-                    var dto = JsonSerializer.Deserialize<CreateBook>(message)!;
-                    await createBookLogic.CreateBook(dto, ct);
-                }
+                var dto = JsonSerializer.Deserialize<CreateBook>(message)!;
+                await createBookLogic.CreateBook(dto, ct);
             },
             cancellationToken: stoppingToken
         );
@@ -43,10 +35,10 @@ public class CreateBookConsumer : BackgroundService
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (_consumer is not null)
+        if (consumer is not null)
         {
-            await _consumer.DisposeAsync();
-            _consumer = null;
+            await consumer.DisposeAsync();
+            consumer = null;
         }
 
         await base.StopAsync(cancellationToken);
