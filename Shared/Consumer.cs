@@ -29,7 +29,7 @@ public class Consumer : IAsyncDisposable
     {
         var factory = new ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = "rabbitmq",
             UserName = "rabbit",
             Password = "rabbit_pw",
             VirtualHost = "/"
@@ -53,8 +53,8 @@ public class Consumer : IAsyncDisposable
                 attempts++;
                 if (attempts > 10) throw;
 
-                Console.WriteLine($"[Consumer] RabbitMQ not ready. Retrying in 10s... (Attempt {attempts})");
-                await Task.Delay(10000, cancellationToken);
+                Console.WriteLine($"[Consumer] RabbitMQ not ready. Retrying in 5s... (Attempt {attempts})");
+                await Task.Delay(5000, cancellationToken);
             }
         }
 

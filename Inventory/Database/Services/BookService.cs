@@ -26,6 +26,7 @@ public class BookService : IBookService
     public async Task CreateAsync(Book book)
     {
         book.CreatedAt = DateTime.UtcNow;
+        book.UpdatedAt = DateTime.UtcNow;
 
         _context.Books.Add(book);
         await _context.SaveChangesAsync();
@@ -33,88 +34,47 @@ public class BookService : IBookService
 
     public async Task<bool> UpdateAsync(Book book)
     {
-        using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
-        try
-        {
-            var existingBook = await _context.Books
-                .FromSqlInterpolated($"SELECT * FROM [Books] WITH (UPDLOCK, ROWLOCK) WHERE [Id] = {book.Id}")
-                .FirstOrDefaultAsync();
+        int rows = await _context.Database.ExecuteSqlInterpolatedAsync($"""
+            UPDATE [Books]
+            SET
+                [Isbn] = {book.Isbn},
+                [Title] = {book.Title},
+                [Author] = {book.Author},
+                [Description] = {book.Description},
+                [PublishedDate] = {book.PublishedDate},
+                [Quantity] = {book.Quantity},
+                [Price] = {book.Price},
+                [UpdatedAt] = {DateTime.UtcNow}
+            WHERE [Id] = {book.Id};
+        """);
 
-            if (existingBook == null) return false;
-
-            existingBook.Isbn = book.Isbn;
-            existingBook.Title = book.Title;
-            existingBook.Author = book.Author;
-            existingBook.Description = book.Description;
-            existingBook.PublishedDate = book.PublishedDate;
-            existingBook.Quantity = book.Quantity;
-            existingBook.Price = book.Price;
-            existingBook.UpdatedAt = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-            return true;
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        return rows > 0;
     }
 
     public async Task<Book?> UpdateStockAsync(Guid id, int quantityChange)
     {
-        using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
-        try
-        {
-            var book = await _context.Books
-                .FromSqlInterpolated($"SELECT * FROM [Books] WITH (UPDLOCK, ROWLOCK) WHERE [Id] = {id}")
-                .FirstOrDefaultAsync();
+        var updated = await _context.Books
+            .FromSqlInterpolated($"""
+                                      UPDATE [Books]
+                                      SET
+                                          [Quantity] = [Quantity] - {quantityChange},
+                                          [UpdatedAt] = {DateTime.UtcNow}
+                                      OUTPUT inserted.*
+                                      WHERE [Id] = {id} AND [Quantity] >= {quantityChange};
+                                  """)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
-            if (book == null) return null;
-
-            if (book.Quantity - quantityChange < 0)
-            {
-                await transaction.RollbackAsync();
-                return null;
-            }
-
-            book.Quantity -= quantityChange;
-            book.UpdatedAt = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return book;
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        return updated;
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
-        try
-        {
-            var book = await _context.Books
-                .FromSqlInterpolated($"SELECT * FROM [Books] WITH (UPDLOCK, ROWLOCK) WHERE [Id] = {id}")
-                .FirstOrDefaultAsync();
+        var rows = await _context.Database.ExecuteSqlInterpolatedAsync($@"
+            DELETE FROM [Books]
+            WHERE [Id] = {id};
+        ");
 
-            if (book != null)
-            {
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
-            }
-
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        return rows > 0;
     }
 }

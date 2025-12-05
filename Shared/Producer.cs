@@ -17,7 +17,7 @@ public class Producer : IAsyncDisposable
 
         var factory = new ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = "rabbitmq",
             Password = "rabbit_pw",
             UserName = "rabbit",
             VirtualHost = "/",

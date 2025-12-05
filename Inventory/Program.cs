@@ -12,19 +12,17 @@ string connectionString = builder.Configuration.GetConnectionString("InventoryDa
 
 builder.Services.AddDbContextPool<InventoryDbContext>(options =>
     options.UseSqlServer(
-            connectionString,
-            sqlOptions =>
-            {
-                sqlOptions.CommandTimeout(60);
-                sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 5,
-                    maxRetryDelay: TimeSpan.FromSeconds(30),
-                    errorNumbersToAdd: null
-                );
-            })
-        .EnableSensitiveDataLogging()
-        .EnableDetailedErrors()
+        connectionString,
+        sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 10,
+                maxRetryDelay: TimeSpan.FromSeconds(5),
+                errorNumbersToAdd: null
+            );
+        })
 );
+
 
 // Add MVC services
 builder.Services.AddControllersWithViews();

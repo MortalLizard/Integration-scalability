@@ -8,7 +8,7 @@ public interface IBookService
     Task<Book?> GetByIdAsync(Guid id);
     Task CreateAsync(Book book);
     Task<bool> UpdateAsync(Book book);
-    Task DeleteAsync(Guid id);
+    Task<bool> DeleteAsync(Guid id);
 
 
     Task<Book?> UpdateStockAsync(Guid id, int quantityChange);

@@ -1,5 +1,4 @@
 using Inventory.Consumers;
-
 using Marketplace.Business.Interfaces;
 using Marketplace.Business.Services;
 using Marketplace.Data.Repositories;
@@ -18,18 +17,15 @@ string connectionString = builder.Configuration.GetConnectionString("Marketplace
 
 builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
     options.UseSqlServer(
-            connectionString,
-            sqlOptions =>
-            {
-                sqlOptions.CommandTimeout(60);
-                sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 5,
-                    maxRetryDelay: TimeSpan.FromSeconds(30),
-                    errorNumbersToAdd: null
-                );
-            })
-        .EnableSensitiveDataLogging()
-        .EnableDetailedErrors()
+        connectionString,
+        sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 10,
+                maxRetryDelay: TimeSpan.FromSeconds(5),
+                errorNumbersToAdd: null
+            );
+        })
 );
 
 // Add consumer as hosted services
@@ -40,6 +36,9 @@ builder.Services.AddHostedService<CreateBookConsumer>();
 builder.Services.AddScoped<ICreateBookLogic, CreateBookLogic>();
 builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+
+// Register Producer as a Singleton so the connection is shared
+builder.Services.AddSingleton<Shared.Producer>();
 
 var app = builder.Build();
 
