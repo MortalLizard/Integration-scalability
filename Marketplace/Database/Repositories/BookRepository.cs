@@ -1,4 +1,4 @@
-using Marketplace.Data.Repositories.DBContext;
+using Marketplace.Database.DBContext;
 using Marketplace.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 

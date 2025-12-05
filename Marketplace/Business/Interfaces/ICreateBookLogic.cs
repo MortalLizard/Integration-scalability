@@ -1,4 +1,3 @@
-
 using Marketplace.Contracts.Commands;
 
 namespace Marketplace.Business.Interfaces;

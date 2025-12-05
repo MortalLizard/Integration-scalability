@@ -4,7 +4,7 @@ using Marketplace.Contracts.Commands;
 
 using Shared;
 
-namespace Inventory.Consumers;
+namespace Marketplace.Consumers;
 
 public class OrderItemConsumer : BackgroundService
 {

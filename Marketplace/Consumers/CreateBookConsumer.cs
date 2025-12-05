@@ -1,10 +1,9 @@
 using System.Text.Json;
 using Marketplace.Business.Interfaces;
 using Marketplace.Contracts.Commands;
-
 using Shared;
 
-namespace Inventory.Consumers;
+namespace Marketplace.Consumers;
 
 public class CreateBookConsumer : BackgroundService
 {

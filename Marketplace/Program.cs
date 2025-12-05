@@ -1,8 +1,8 @@
-using Inventory.Consumers;
+using Marketplace.Consumers;
 using Marketplace.Business.Interfaces;
 using Marketplace.Business.Services;
 using Marketplace.Database.Repositories;
-using Marketplace.Data.Repositories.DBContext;
+using Marketplace.Database.DBContext;
 
 using Microsoft.EntityFrameworkCore;
 

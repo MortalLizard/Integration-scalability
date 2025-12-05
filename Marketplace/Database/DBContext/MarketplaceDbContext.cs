@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Marketplace.Database.Entities;
 
-namespace Marketplace.Data.Repositories.DBContext;
+namespace Marketplace.Database.DBContext;
 
 public class MarketplaceDbContext : DbContext
 {

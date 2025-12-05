@@ -1,5 +1,3 @@
-using System;
-
 namespace Marketplace.Contracts.Dtos;
 
 public sealed class BookDto

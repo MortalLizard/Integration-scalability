@@ -1,5 +1,4 @@
 using Marketplace.Database.Entities;
-
 namespace Marketplace.Database.Repositories;
 
 public interface IBookRepository
