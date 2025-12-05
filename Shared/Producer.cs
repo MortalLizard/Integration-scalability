@@ -3,57 +3,52 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
+using RabbitMQ.Client.Events;
+
 namespace Shared;
 
 public class Producer : IAsyncDisposable
 {
     private readonly IChannel _channel;
-    private readonly string _queueName;
-    private readonly int _sleepMs;
     private readonly IConnection _connection;
 
-    public Producer(string queueName, int sleepMs = 50)
+    public Producer()
     {
-        _sleepMs = sleepMs;
-        _queueName = queueName;
 
-        // Opret forbindelse og kanal synkront ved hjælp af async init (man kan også gøre ctor asynkron, se nedenfor)
         var factory = new ConnectionFactory
         {
-            HostName = "rabbitmq", 
-            Password = "rabbit_pw", 
+            HostName = "rabbitmq",
+            Password = "rabbit_pw",
             UserName = "rabbit",
             VirtualHost = "/",
-            
+
         };
- 
+
         _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
         _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
 
-        // Declare queue
+
+
+        Console.WriteLine($"Producer started, attached to: localhost.");
+    }
+
+    public async Task SendMessageAsync(string queueName, string message)
+    {
         _channel.QueueDeclareAsync(
-            queue: _queueName,
+            queue: queueName,
             durable: false,
             exclusive: false,
             autoDelete: false,
             arguments: null).GetAwaiter().GetResult();
 
-        Console.WriteLine($"Producer started, attached to: localhost.{queueName}");
-    }
-
-    public async Task SendMessageAsync(string message)
-    {
         var body = Encoding.UTF8.GetBytes(message);
 
-        // Ny ikke-generisk overload i v7.x
         await _channel.BasicPublishAsync(
             exchange: "",
-            routingKey: _queueName,
+            routingKey: queueName,
             mandatory: false,
             body: body);
 
-        if (_sleepMs > 0)
-            await Task.Delay(_sleepMs);
     }
 
     public async ValueTask DisposeAsync()

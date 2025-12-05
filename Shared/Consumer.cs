@@ -1,8 +1,9 @@
-﻿using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System;
+﻿using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace Shared;
 
@@ -11,68 +12,105 @@ public class Consumer : IAsyncDisposable
     private readonly IConnection _connection;
     private readonly IChannel _channel;
     private readonly string _queueName;
+    private readonly string _consumerTag;
 
-    public string QueueName => _queueName;
-
-    public Consumer(string queueName, Action<string> action)
+    private Consumer(IConnection connection, IChannel channel, string queueName, string consumerTag)
     {
+        _connection = connection;
+        _channel = channel;
         _queueName = queueName;
+        _consumerTag = consumerTag;
+    }
 
-        Console.WriteLine($"Consumer started, listening to: localhost.{queueName}");
-
-        // Opret forbindelse og kanal synkront via async (kan evt. ændres til factory-metode)
+    public static async Task<Consumer> CreateAsync(
+        string queueName,
+        Func<string, CancellationToken, Task> handler,
+        CancellationToken cancellationToken = default)
+    {
         var factory = new ConnectionFactory
         {
-            HostName = "localhost", 
-            Password = "rabbit_pw", 
+            HostName = "rabbitmq",
             UserName = "rabbit",
+            Password = "rabbit_pw",
             VirtualHost = "/"
         };
-        _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
-        _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
 
-        // Deklarér køen
-        _channel.QueueDeclareAsync(
-            queue: _queueName,
+        IConnection connection = null;
+        IChannel channel = null;
+
+        // Retry logic for connection
+        int attempts = 0;
+        while (true)
+        {
+            try
+            {
+                connection = await factory.CreateConnectionAsync(cancellationToken);
+                channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+                break;
+            }
+            catch (Exception ex)
+            {
+                attempts++;
+                if (attempts > 10) throw;
+
+                Console.WriteLine($"[Consumer] RabbitMQ not ready. Retrying in 3s... (Attempt {attempts})");
+                await Task.Delay(3000, cancellationToken);
+            }
+        }
+
+        await channel.QueueDeclareAsync(
+            queue: queueName,
             durable: false,
             exclusive: false,
             autoDelete: false,
-            arguments: null).GetAwaiter().GetResult();
+            arguments: null,
+            cancellationToken: cancellationToken);
 
-        // QoS – hent én besked ad gangen
-        _channel.BasicQosAsync(
-            prefetchSize: 0,
-            prefetchCount: 1,
-            global: false).GetAwaiter().GetResult();
+        await channel.BasicQosAsync(0, 1, false, cancellationToken);
 
-        // Async consumer
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.ReceivedAsync += async (sender, ea) =>
+        var asyncConsumer = new AsyncEventingBasicConsumer(channel);
+
+        asyncConsumer.ReceivedAsync += async (sender, ea) =>
         {
-            var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                await channel.BasicNackAsync(ea.DeliveryTag, false, true, cancellationToken);
+                return;
+            }
 
-            // Kald callback-action
-            action(message);
+            try
+            {
+                var msg = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-            // Send ACK
-            await _channel.BasicAckAsync(
-                deliveryTag: ea.DeliveryTag,
-                multiple: false);
+                await handler(msg, cancellationToken);
 
-            await Task.Yield(); // sikker async-afslutning
+                await channel.BasicAckAsync(ea.DeliveryTag, false, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing message: {ex.Message}");
+
+                await channel.BasicAckAsync(ea.DeliveryTag, false, cancellationToken);
+            }
         };
 
-        // Start consuming
-        _channel.BasicConsumeAsync(
-            queue: _queueName,
+        var consumerTag = await channel.BasicConsumeAsync(
+            queue: queueName,
             autoAck: false,
-            consumer: consumer).GetAwaiter().GetResult();
+            consumer: asyncConsumer,
+            cancellationToken: cancellationToken);
+
+        Console.WriteLine($"Consumer started on queue '{queueName}', tag='{consumerTag}', prefetch=1");
+
+        return new Consumer(connection, channel, queueName, consumerTag);
     }
 
     public async ValueTask DisposeAsync()
     {
+        try { await _channel.BasicCancelAsync(_consumerTag); } catch { }
+
         await _channel.DisposeAsync();
         await _connection.DisposeAsync();
     }
 }
+
