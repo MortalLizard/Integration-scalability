@@ -23,6 +23,24 @@ builder.Services.AddDbContextPool<InventoryDbContext>(options =>
         })
 );
 
+// Add cap - outbox handling
+string hostName = builder.Configuration.GetValue<string>("Rabbit:Host") ?? "rabbitmq";
+
+builder.Services.AddCap(x =>
+{
+    // Using Entity Framework
+    // CAP can auto-discover the connection string
+    x.UseEntityFramework<InventoryDbContext>();
+
+    // Using ADO.NET
+    x.UseSqlServer(connectionString);
+
+    // Choose your message transport
+    x.UseRabbitMQ(hostName);
+
+    x.UseDashboard(opt => { opt.PathMatch = "/my-cap"; });
+});
+
 // Add MVC services
 builder.Services.AddControllersWithViews();
 

@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="DotNetCore.CAP" Version="10.0.0" />
+        <PackageReference Include="DotNetCore.CAP.Dashboard" Version="10.0.0" />
+        <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="10.0.0" />
+        <PackageReference Include="DotNetCore.CAP.SqlServer" Version="10.0.0" />
         <PackageReference Include="JsonSchema.Net" Version="7.4.0" />
         <PackageReference Include="JsonSchema.Net.Generation" Version="5.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
