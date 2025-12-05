@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Inventory.Contracts.Events;
 
-public record OrderItemProcessFailed(
+public sealed record OrderItemProcessFailed(
 
     [property: JsonPropertyName("orderId")]
     [property: Required]

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Inventory.Contracts.Commands;
 
-public record OrderItemProcess(
+public sealed record OrderItemProcess(
 
     [property: JsonPropertyName("orderId")]
     [property: Required]

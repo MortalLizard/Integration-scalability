@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Contracts\DTOs\" />
+      <Folder Include="Contracts\Dtos\" />
       <Folder Include="Controllers\Api\" />
       <Folder Include="obj\Debug\net10.0\" />
     </ItemGroup>
