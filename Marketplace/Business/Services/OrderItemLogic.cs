@@ -8,7 +8,7 @@ namespace Marketplace.Business.Services;
 
 public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer producer) : IOrderItemLogic
 {
-    private const string ResponseQueueName = "marketplace.order-item.processed";
+    private const string responseQueueName = "marketplace.order-item.processed";
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
@@ -30,6 +30,6 @@ public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer prod
 
         var jsonMessage = JsonSerializer.Serialize(responsePayload);
 
-        await producer.SendMessageAsync(ResponseQueueName, jsonMessage);
+        await producer.SendMessageAsync(responseQueueName, jsonMessage);
     }
 }

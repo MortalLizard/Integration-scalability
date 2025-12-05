@@ -48,9 +48,4 @@ public class Book
 
     [Required]
     public required DateTime UpdatedAt { get; set; }
-
-    public decimal GetTotal()
-    {
-        return Price * Quantity;
-    }
 }

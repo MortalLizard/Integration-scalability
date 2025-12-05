@@ -20,16 +20,19 @@ public class MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options
                 .HasMaxLength(256);
 
             entity.Property(b => b.Author)
+                .IsRequired()
                 .HasMaxLength(256);
 
             entity.Property(b => b.Isbn)
+                .IsRequired()
                 .HasMaxLength(50);
 
             entity.Property(b => b.Price)
                 .IsRequired()
                 .HasPrecision(18, 2);
 
-            entity.Property(b => b.PublishedDate);
+            entity.Property(b => b.PublishedDate)
+                .IsRequired();
 
             entity.Property(b => b.Description);
 

@@ -1,4 +1,8 @@
+using System.Data;
+
 using Inventory.Database.Entities;
+
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Database.Services;
@@ -43,21 +47,42 @@ public class BookService(InventoryDbContext context) : IBookService
         return rows > 0;
     }
 
-    public async Task<Book?> UpdateStockAsync(Guid id, int quantityChange)
+    public async Task<Book?> UpdateStockAsync(Guid id, int quantityChange, CancellationToken ct = default)
     {
-        var updated = await context.Books
-            .FromSqlInterpolated($"""
-                                      UPDATE [Books]
-                                      SET
-                                          [Quantity] = [Quantity] - {quantityChange},
-                                          [UpdatedAt] = {DateTime.UtcNow}
-                                      OUTPUT inserted.*
-                                      WHERE [Id] = {id} AND [Quantity] >= {quantityChange};
-                                  """)
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
+        const string sql = @"
+            UPDATE dbo.Books
+            SET Quantity = Quantity - @quantity
+            OUTPUT inserted.*
+            WHERE Id = @id AND Quantity >= @quantity;
+        ";
 
-        return updated;
+        var conn = (SqlConnection)context.Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open) await conn.OpenAsync(ct);
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        cmd.CommandType = CommandType.Text;
+        cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.UniqueIdentifier) { Value = id });
+        cmd.Parameters.Add(new SqlParameter("@quantity", SqlDbType.Int) { Value = quantityChange });
+
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        if (!await reader.ReadAsync(ct)) return null;
+
+        var book = new Book
+        {
+            Id = reader.GetGuid(reader.GetOrdinal("Id")),
+            Isbn = reader.GetString(reader.GetOrdinal("Isbn")),
+            Title = reader.GetString(reader.GetOrdinal("Title")),
+            Author = reader.GetString(reader.GetOrdinal("Author")),
+            Description = reader.GetString(reader.GetOrdinal("Description")),
+            PublishedDate = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("PublishedDate"))),
+            Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+            Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+            CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+            UpdatedAt = reader.GetDateTime(reader.GetOrdinal("UpdatedAt"))
+        };
+
+        return book;
     }
 
     public async Task<bool> DeleteAsync(Guid id)

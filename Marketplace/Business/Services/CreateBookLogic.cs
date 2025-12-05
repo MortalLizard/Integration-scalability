@@ -9,7 +9,7 @@ namespace Marketplace.Business.Services;
 
 public class CreateBookLogic(IBookRepository bookRepository, Shared.Producer producer) : ICreateBookLogic
 {
-    private const string ResponseQueueName = "marketplace.book-created";
+    private const string responseQueueName = "marketplace.book-created";
 
     public async Task CreateBook(CreateBook createBook, CancellationToken ct = default)
     {
@@ -36,6 +36,6 @@ public class CreateBookLogic(IBookRepository bookRepository, Shared.Producer pro
 
         var jsonMessage = JsonSerializer.Serialize(responsePayload);
 
-        await producer.SendMessageAsync(ResponseQueueName, jsonMessage);
+        await producer.SendMessageAsync(responseQueueName, jsonMessage);
     }
 }

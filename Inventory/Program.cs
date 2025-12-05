@@ -23,7 +23,6 @@ builder.Services.AddDbContextPool<InventoryDbContext>(options =>
         })
 );
 
-
 // Add MVC services
 builder.Services.AddControllersWithViews();
 
