@@ -4,14 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Marketplace.Database.Repositories;
 
-public class BookRepository : IBookRepository
+public class BookRepository(MarketplaceDbContext dbContext) : IBookRepository
 {
-    private readonly MarketplaceDbContext dbContext;
-
-    public BookRepository(MarketplaceDbContext dbContext)
-    {
-        this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-    }
+    private readonly MarketplaceDbContext dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
     public async Task<Book?> CreateAsync(Book book, CancellationToken cancellationToken = default)
     {
