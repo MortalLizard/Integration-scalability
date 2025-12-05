@@ -26,46 +26,11 @@ public class BookRepository : IBookRepository
         return entryCount > 0 ? book : null;
     }
 
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        var entity = await dbContext.Books.FindAsync([id], cancellationToken);
-        if (entity is null)
-        {
-            return false;
-        }
-
-        dbContext.Books.Remove(entity);
-        int changed = await dbContext.SaveChangesAsync(cancellationToken);
-        return changed > 0;
-    }
-
-    public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Books
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await dbContext.Books
             .AsNoTracking()
             .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
-    }
-
-    public async Task<Book> UpdateAsync(Book book, CancellationToken cancellationToken = default)
-    {
-        if (book is null)
-        {
-            throw new ArgumentNullException(nameof(book));
-        }
-
-        book.UpdatedAt = DateTime.UtcNow;
-
-        dbContext.Books.Update(book);
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        return book;
     }
 
     public async Task<Book?> UpdateIsActiveAsync(Guid id)
