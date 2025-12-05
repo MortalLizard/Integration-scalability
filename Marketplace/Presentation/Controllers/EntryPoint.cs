@@ -11,8 +11,7 @@ public static class EntryPoint
         Console.WriteLine($"Starting consumer for {queueName}");
 
         await using var consumer = new Consumer(queueName, message =>
-            //do something
-            Console.WriteLine(message)
+            Console.WriteLine($"Received message: {message}")
         );
     }
 

@@ -13,5 +13,3 @@ public class BookController : ControllerBase
         return NotFound();
     }
 }
-
-
