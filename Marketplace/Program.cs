@@ -13,9 +13,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 // Setup db
-builder.Services.AddDbContext<MarketplaceDbContext>(options =>
+string connectionString = builder.Configuration.GetConnectionString("MarketplaceDatabase")
+                          ?? "Server=marketplace-db;Database=marketplace;User Id=sa;Password=Marketplace@123;TrustServerCertificate=True;";
+
+builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("MarketplaceDatabase")));
+            connectionString,
+            sqlOptions =>
+            {
+                sqlOptions.CommandTimeout(60);
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null
+                );
+            })
+        .EnableSensitiveDataLogging()
+        .EnableDetailedErrors()
+);
 
 // Add consumer as hosted services
 builder.Services.AddHostedService<OrderItemConsumer>();

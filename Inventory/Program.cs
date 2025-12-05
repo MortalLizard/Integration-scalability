@@ -7,9 +7,24 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Setup database connection
-builder.Services.AddDbContext<InventoryDbContext>(options =>
+string connectionString = builder.Configuration.GetConnectionString("InventoryDatabase")
+                          ?? "Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;";
+
+builder.Services.AddDbContextPool<InventoryDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("InventoryDatabase") ?? "Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;"));
+            connectionString,
+            sqlOptions =>
+            {
+                sqlOptions.CommandTimeout(60);
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null
+                );
+            })
+        .EnableSensitiveDataLogging()
+        .EnableDetailedErrors()
+);
 
 // Add MVC services
 builder.Services.AddControllersWithViews();

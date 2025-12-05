@@ -14,6 +14,7 @@
             - ConnectionStrings__Default=Server=marketplace-db;Database=marketplace;User Id=sa;Password=Marketplace@123;TrustServerCertificate=True;
         depends_on:
             - marketplace-db
+            - rabbitmq
 
     gateway:
         build:
@@ -42,6 +43,7 @@
             - ConnectionStrings__Default=Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;
         depends_on:
             - inventory-db
+            - rabbitmq
 
     billing:
         build:
@@ -104,6 +106,7 @@
             - "14335:1433"
         volumes:
             - inventory_sql_data:/var/opt/mssql
+
     search-db:
         image: mongo:7
         container_name: search-db

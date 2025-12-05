@@ -53,8 +53,8 @@ public class Consumer : IAsyncDisposable
                 attempts++;
                 if (attempts > 10) throw;
 
-                Console.WriteLine($"[Consumer] RabbitMQ not ready. Retrying in 3s... (Attempt {attempts})");
-                await Task.Delay(3000, cancellationToken);
+                Console.WriteLine($"[Consumer] RabbitMQ not ready. Retrying in 10s... (Attempt {attempts})");
+                await Task.Delay(10000, cancellationToken);
             }
         }
 
