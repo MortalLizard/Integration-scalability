@@ -3,10 +3,17 @@ using Marketplace.Business.Interfaces;
 using Marketplace.Business.Services;
 using Marketplace.Database.Repositories;
 using Marketplace.Database.DBContext;
-
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog as the default static logger
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Services.AddSerilog();
 
 // Add services to the container.
 builder.Services.AddOpenApi();
@@ -27,25 +34,6 @@ builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
             );
         })
 );
-
-// Add cap - outbox handling
-string hostName = builder.Configuration.GetValue<string>("Rabbit:Host") ?? "rabbitmq";
-
-builder.Services.AddCap(x =>
-{
-    // Using Entity Framework
-    // CAP can auto-discover the connection string
-    x.UseEntityFramework<MarketplaceDbContext>();
-
-    // Using ADO.NET
-    x.UseSqlServer(connectionString);
-
-    // Choose your message transport
-    x.UseRabbitMQ(hostName);
-
-    x.UseDashboard(opt => { opt.PathMatch = "/my-cap"; });
-});
-
 
 // Add consumer as hosted services
 builder.Services.AddHostedService<OrderItemConsumer>();

@@ -4,6 +4,7 @@ using Marketplace.Contracts.Commands;
 using Marketplace.Contracts.Events;
 using Marketplace.Database.Repositories;
 using Marketplace.Mappers;
+using Serilog;
 
 namespace Marketplace.Business.Services;
 
@@ -20,6 +21,7 @@ public class CreateBookLogic(IBookRepository bookRepository, Shared.Producer pro
         if (null == createdBook)
         {
             // Handle negative outcome
+            Log.Logger.Error("Failed to create book");
         }
 
         var responsePayload = new BookCreated(

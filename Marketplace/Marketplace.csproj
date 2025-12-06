@@ -57,10 +57,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="DotNetCore.CAP" Version="10.0.0" />
-        <PackageReference Include="DotNetCore.CAP.Dashboard" Version="10.0.0" />
-        <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="10.0.0" />
-        <PackageReference Include="DotNetCore.CAP.SqlServer" Version="10.0.0" />
+        <PackageReference Include="Elastic.CommonSchema.Serilog" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
@@ -68,6 +65,11 @@
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+        <PackageReference Include="Serilog.Enrichers.CallerInfo" Version="1.0.6" />
+        <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     </ItemGroup>
 
     <ItemGroup>

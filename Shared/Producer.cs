@@ -1,9 +1,5 @@
 using RabbitMQ.Client;
-using System;
 using System.Text;
-using System.Threading.Tasks;
-
-using RabbitMQ.Client.Events;
 
 namespace Shared;
 

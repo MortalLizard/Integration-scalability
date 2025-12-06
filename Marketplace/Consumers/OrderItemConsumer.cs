@@ -2,6 +2,8 @@ using System.Text.Json;
 using Marketplace.Business.Interfaces;
 using Marketplace.Contracts.Commands;
 
+using Serilog;
+
 using Shared;
 
 namespace Marketplace.Consumers;
@@ -17,6 +19,7 @@ public class OrderItemConsumer(IServiceScopeFactory serviceScopeFactory) : Backg
             queueName: queueName,
             handler: async (message, ct) =>
             {
+                Log.Error("Received message: {Message}", message ?? "null");
                 using var scope = serviceScopeFactory.CreateScope();
                 var orderItemLogic = scope.ServiceProvider.GetRequiredService<IOrderItemLogic>();
 
