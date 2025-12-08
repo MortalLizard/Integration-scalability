@@ -19,7 +19,6 @@ public class OrderItemConsumer(IServiceScopeFactory serviceScopeFactory) : Backg
             queueName: queueName,
             handler: async (message, ct) =>
             {
-                Log.Error("Received message: {Message}", message ?? "null");
                 using var scope = serviceScopeFactory.CreateScope();
                 var orderItemLogic = scope.ServiceProvider.GetRequiredService<IOrderItemLogic>();
 
