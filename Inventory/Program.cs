@@ -4,7 +4,16 @@ using Inventory.Database;
 using Inventory.Logic;
 using Microsoft.EntityFrameworkCore;
 
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog as the default static logger
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Services.AddSerilog();
 
 // Setup database connection
 string connectionString = builder.Configuration.GetConnectionString("InventoryDatabase")

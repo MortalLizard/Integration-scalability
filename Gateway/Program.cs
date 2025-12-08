@@ -1,8 +1,17 @@
 using System.Text.Json;
 
+using Serilog;
+
 using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog as the default static logger
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Services.AddSerilog();
 
 // Add services to the container.
 builder.Services.AddOpenApi();
