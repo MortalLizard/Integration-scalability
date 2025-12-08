@@ -4,6 +4,8 @@ using Marketplace.Contracts.Commands;
 using Marketplace.Contracts.Events;
 using Marketplace.Database.Repositories;
 
+using Serilog;
+
 namespace Marketplace.Business.Services;
 
 public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer producer) : IOrderItemLogic
@@ -12,11 +14,10 @@ public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer prod
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        var updatedBook = await bookRepository.UpdateIsActiveAsync(orderItemProcess.CorrelationId, ct);
+        var updatedBook = await bookRepository.UpdateIsActiveAsync(orderItemProcess.BookId, ct);
 
         if(updatedBook == null)
         {
-            // Handle negative outcome
         }
 
         var responsePayload = new OrderItemProcessed(
@@ -25,7 +26,7 @@ public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer prod
             Price: updatedBook.Price
         );
 
-        var jsonMessage = JsonSerializer.Serialize(responsePayload);
+        string jsonMessage = JsonSerializer.Serialize(responsePayload);
 
         await producer.SendMessageAsync(responseQueueName, jsonMessage);
     }
