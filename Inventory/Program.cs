@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Serilog;
 
+using Shared;
 using Shared.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,8 @@ builder.Services.AddDbContextPool<InventoryDbContext>(options =>
 
 //create rabbitmq connection singleton and producer service
 builder.Services.AddRabbitInfrastructure();
+builder.Services.AddSingleton<Producer>();
+builder.Services.AddTransient<Consumer>();
 
 // Add MVC services
 builder.Services.AddControllersWithViews();

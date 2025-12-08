@@ -1,29 +1,36 @@
 using System.Text.Json;
 using Inventory.Contracts.Commands;
-using Shared;
 using Inventory.Logic;
+using Shared;
 
 namespace Inventory.Consumers;
 
-public class OrderItemConsumer(IServiceScopeFactory serviceScopeFactory) : BackgroundService
+public class OrderItemConsumer : BackgroundService
 {
-    private Consumer? consumer;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly Consumer _consumer;
     private const string queueName = "inventory.order-item.process";
+
+    public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory, Consumer consumer)
+    {
+        _serviceScopeFactory = serviceScopeFactory;
+        _consumer = consumer;
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        consumer = await Consumer.CreateAsync(
+        await _consumer.StartAsync(
             queueName: queueName,
             handler: async (message, ct) =>
             {
-                using var scope = serviceScopeFactory.CreateScope();
+                using var scope = _serviceScopeFactory.CreateScope();
                 var orderItemLogic = scope.ServiceProvider.GetRequiredService<IOrderItemLogic>();
 
                 var dto = JsonSerializer.Deserialize<OrderItemProcess>(message)!;
                 await orderItemLogic.ProcessOrderItem(dto, ct);
             },
-            cancellationToken: stoppingToken
-        );
+            cancellationToken: stoppingToken);
+
         try
         {
             await Task.Delay(Timeout.Infinite, stoppingToken).ConfigureAwait(false);
@@ -35,11 +42,8 @@ public class OrderItemConsumer(IServiceScopeFactory serviceScopeFactory) : Backg
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (consumer is not null)
-        {
-            await consumer.DisposeAsync();
-            consumer = null;
-        }
+        // Dispose the underlying RabbitMQ channel/consumer
+        await _consumer.DisposeAsync();
 
         await base.StopAsync(cancellationToken);
     }

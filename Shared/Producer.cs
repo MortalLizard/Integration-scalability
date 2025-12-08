@@ -4,7 +4,7 @@ using Serilog;
 
 namespace Shared;
 
-public class Producer : IAsyncDisposable
+public class Producer
 {
     private readonly IConnection _connection;
 
@@ -27,7 +27,7 @@ public class Producer : IAsyncDisposable
             autoDelete: false,
             arguments: null).GetAwaiter().GetResult();
 
-        var body = Encoding.UTF8.GetBytes(message);
+        byte[] body = Encoding.UTF8.GetBytes(message);
 
         await channel.BasicPublishAsync(
             exchange: "",
@@ -36,9 +36,5 @@ public class Producer : IAsyncDisposable
             body: body);
 
         Log.Information($"Message sent to queue: '{queueName}', with body: '{message}'");
-    }
-
-    public async ValueTask DisposeAsync()
-    {
     }
 }

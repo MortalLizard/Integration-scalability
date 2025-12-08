@@ -1,22 +1,31 @@
 using System.Text.Json;
 using Marketplace.Business.Interfaces;
 using Marketplace.Contracts.Commands;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shared;
 
 namespace Marketplace.Consumers;
 
-public class CreateBookConsumer(IServiceScopeFactory serviceScopeFactory) : BackgroundService
+public class CreateBookConsumer : BackgroundService
 {
-    private Consumer? consumer;
-    private const string queueName = "marketplace.create-book";
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly Consumer _consumer; // the RabbitMQ consumer we built
+    private const string QueueName = "marketplace.create-book";
+
+    public CreateBookConsumer(IServiceScopeFactory serviceScopeFactory, Consumer consumer)
+    {
+        _serviceScopeFactory = serviceScopeFactory;
+        _consumer = consumer;
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        consumer = await Consumer.CreateAsync(
-            queueName: queueName,
+        await _consumer.StartAsync(
+            queueName: QueueName,
             handler: async (message, ct) =>
             {
-                using var scope = serviceScopeFactory.CreateScope();
+                using var scope = _serviceScopeFactory.CreateScope();
                 var createBookLogic = scope.ServiceProvider.GetRequiredService<ICreateBookLogic>();
 
                 var dto = JsonSerializer.Deserialize<CreateBook>(message)!;
@@ -24,23 +33,19 @@ public class CreateBookConsumer(IServiceScopeFactory serviceScopeFactory) : Back
             },
             cancellationToken: stoppingToken
         );
+
         try
         {
-            await Task.Delay(Timeout.Infinite, stoppingToken).ConfigureAwait(false);
+            await Task.Delay(Timeout.Infinite, stoppingToken);
         }
-        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        catch (OperationCanceledException)
         {
         }
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (consumer is not null)
-        {
-            await consumer.DisposeAsync();
-            consumer = null;
-        }
-
+        await _consumer.DisposeAsync(); // stop consumer properly
         await base.StopAsync(cancellationToken);
     }
 }

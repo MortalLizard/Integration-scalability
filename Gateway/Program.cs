@@ -1,7 +1,4 @@
-using System.Text.Json;
-
 using Serilog;
-
 using Shared;
 using Shared.Infrastructure;
 
@@ -16,7 +13,8 @@ builder.Services.AddSerilog();
 
 //create rabbitmq connection singleton and producer service
 builder.Services.AddRabbitInfrastructure();
-builder.Services.AddTransient<Producer>();
+builder.Services.AddSingleton<Producer>();
+
 // Add services to the container.
 builder.Services.AddOpenApi();
 builder.Services.AddControllers().AddJsonOptions(options =>

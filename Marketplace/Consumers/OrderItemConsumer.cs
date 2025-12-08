@@ -1,25 +1,29 @@
 using System.Text.Json;
 using Marketplace.Business.Interfaces;
 using Marketplace.Contracts.Commands;
-
-using Serilog;
-
 using Shared;
 
 namespace Marketplace.Consumers;
 
-public class OrderItemConsumer(IServiceScopeFactory serviceScopeFactory) : BackgroundService
+public class OrderItemConsumer : BackgroundService
 {
-    private Consumer? consumer;
-    private const string queueName = "marketplace.order-item.process";
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly Consumer _consumer;
+    private const string QueueName = "marketplace.order-item.process";
+
+    public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory, Consumer consumer)
+    {
+        _serviceScopeFactory = serviceScopeFactory;
+        _consumer = consumer;
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        consumer = await Consumer.CreateAsync(
-            queueName: queueName,
+        await _consumer.StartAsync(
+            queueName: QueueName,
             handler: async (message, ct) =>
             {
-                using var scope = serviceScopeFactory.CreateScope();
+                using var scope = _serviceScopeFactory.CreateScope();
                 var orderItemLogic = scope.ServiceProvider.GetRequiredService<IOrderItemLogic>();
 
                 var dto = JsonSerializer.Deserialize<OrderItemProcess>(message)!;
@@ -27,23 +31,19 @@ public class OrderItemConsumer(IServiceScopeFactory serviceScopeFactory) : Backg
             },
             cancellationToken: stoppingToken
         );
+
         try
         {
-            await Task.Delay(Timeout.Infinite, stoppingToken).ConfigureAwait(false);
+            await Task.Delay(Timeout.Infinite, stoppingToken);
         }
-        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        catch (OperationCanceledException)
         {
         }
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (consumer is not null)
-        {
-            await consumer.DisposeAsync();
-            consumer = null;
-        }
-
+        await _consumer.DisposeAsync();
         await base.StopAsync(cancellationToken);
     }
 }

@@ -6,6 +6,7 @@ using Marketplace.Database.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
+using Shared;
 using Shared.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,8 @@ builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
 
 //create rabbitmq connection singleton and producer service
 builder.Services.AddRabbitInfrastructure();
+builder.Services.AddSingleton<Producer>();
+builder.Services.AddTransient<Consumer>();
 
 // Add consumer as hosted services
 builder.Services.AddHostedService<OrderItemConsumer>();
