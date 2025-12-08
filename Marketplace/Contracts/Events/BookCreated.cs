@@ -32,7 +32,7 @@ public sealed record BookCreated(
     [property: JsonPropertyName("description")]
     string? Description,
 
-    [property: JsonPropertyName("isActive")]
+    [property: JsonPropertyName("is_active")]
     [property: Required]
     bool IsActive,
 

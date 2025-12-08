@@ -9,17 +9,12 @@ public sealed record OrderItemProcess(
     [property: Required]
     Guid CorrelationId,
 
-    [property: JsonPropertyName("quantityChange")]
+    [property: JsonPropertyName("quantity")]
     [property: Required]
     [property: Range(typeof(int), "1", "999999999")]
     int Quantity,
 
     [property: JsonPropertyName("book_id")]
     [property: Required]
-    Guid BookId,
-
-    [property: JsonPropertyName("portion")]
-    [property: Required]
-    [property: Range(0.0, 1.0)]
-    decimal Portion
+    Guid BookId
 );
