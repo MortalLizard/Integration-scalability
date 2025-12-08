@@ -11,21 +11,21 @@ public class OrderItemLogic(IBookService bookService, Shared.Producer producer) 
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        var updatedBook = await bookService.UpdateStockAsync(orderItemProcess.BookId, orderItemProcess.Quantity);
+        bool success = await bookService.UpdateStockAsync(orderItemProcess.BookId, orderItemProcess.Quantity, orderItemProcess.Price, ct);
 
-        if (null == updatedBook)
+        if (!success)
         {
-            //Failover scenario
+            throw new InvalidOperationException("Price mismatch or book not in stock.");
         }
 
         var responsePayload = new OrderItemProcessed(
             CorrelationId: orderItemProcess.CorrelationId,
             BookId: orderItemProcess.BookId,
             Quantity: orderItemProcess.Quantity,
-            Price: updatedBook.Price
+            Price: orderItemProcess.Price
         );
 
-        var jsonMessage = JsonSerializer.Serialize(responsePayload);
+        string jsonMessage = JsonSerializer.Serialize(responsePayload);
 
         await producer.SendMessageAsync(responseQueueName, jsonMessage);
     }

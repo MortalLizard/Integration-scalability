@@ -13,4 +13,6 @@ public sealed record OrderlineDto
     [JsonPropertyName("correlation_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public string? CorrelationId { get; set; }
+    [JsonPropertyName("price")]
+    public required decimal Price { get; set; }
 }

@@ -14,5 +14,9 @@ public sealed record OrderItemProcess(
 
     [property: JsonPropertyName("book_id")]
     [property: JsonRequired]
-    Guid BookId
+    Guid BookId,
+
+    [property: JsonPropertyName("price")]
+    [property: JsonRequired]
+    decimal Price
 );

@@ -14,16 +14,17 @@ public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer prod
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        var updatedBook = await bookRepository.UpdateIsActiveAsync(orderItemProcess.BookId, ct);
+        bool success = await bookRepository.UpdateIsActiveAsync(orderItemProcess.BookId, orderItemProcess.Price, ct);
 
-        if(updatedBook == null)
+        if(!success)
         {
+            throw new InvalidOperationException("Price mismatch or book not active.");
         }
 
         var responsePayload = new OrderItemProcessed(
             CorrelationId: orderItemProcess.CorrelationId,
             BookId: orderItemProcess.BookId,
-            Price: updatedBook.Price
+            Price: orderItemProcess.Price
         );
 
         string jsonMessage = JsonSerializer.Serialize(responsePayload);

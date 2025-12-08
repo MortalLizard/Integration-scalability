@@ -29,7 +29,8 @@ public sealed class OrderSchema : AbstractJsonSchema
                             .Properties(
                                 ("book_id", new JsonSchemaBuilder().Type(SchemaValueType.String)),
                                 ("quantity", new JsonSchemaBuilder().Type(SchemaValueType.Integer)),
-                                ("marketplace", new JsonSchemaBuilder().Type(SchemaValueType.Boolean))
+                                ("marketplace", new JsonSchemaBuilder().Type(SchemaValueType.Boolean)),
+                                ("price", new JsonSchemaBuilder().Type(SchemaValueType.Number))
                     ))
                 )
             )
