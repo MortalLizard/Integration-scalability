@@ -5,20 +5,15 @@ namespace Marketplace.Contracts.Commands;
 
 public sealed record OrderItemProcess(
 
-    [property: JsonPropertyName("orderId")]
+    [property: JsonPropertyName("correlation_id")]
     [property: Required]
-    Guid OrderId,
+    Guid CorrelationId,
 
     [property: JsonPropertyName("email")]
     [property: Required]
     string Email,
 
-    [property: JsonPropertyName("productId")]
+    [property: JsonPropertyName("book_id")]
     [property: Required]
-    Guid ProductId,
-
-    [property: JsonPropertyName("portion")]
-    [property: Required]
-    [property: Range(0.0, 1.0)]
-    decimal Portion
+    Guid BookId
 );

@@ -11,7 +11,7 @@ public class OrderItemLogic(IBookService bookService, Shared.Producer producer) 
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        var updatedBook = await bookService.UpdateStockAsync(orderItemProcess.ProductId, orderItemProcess.QuantityChange);
+        var updatedBook = await bookService.UpdateStockAsync(orderItemProcess.BookId, orderItemProcess.Quantity);
 
         if (null == updatedBook)
         {
@@ -19,13 +19,11 @@ public class OrderItemLogic(IBookService bookService, Shared.Producer producer) 
         }
 
         var responsePayload = new OrderItemProcessed(
-            OrderId: orderItemProcess.OrderId,
+            CorrelationId: orderItemProcess.CorrelationId,
             Email: orderItemProcess.Email,
-            ProductId: orderItemProcess.ProductId,
-            Quantity: orderItemProcess.QuantityChange,
-            Price: updatedBook.Price,
-            Portion: orderItemProcess.Portion,
-            Timestamp: DateTime.UtcNow
+            BookId: orderItemProcess.BookId,
+            Quantity: orderItemProcess.Quantity,
+            Price: updatedBook.Price
         );
 
         var jsonMessage = JsonSerializer.Serialize(responsePayload);

@@ -5,9 +5,9 @@ namespace Inventory.Contracts.Commands;
 
 public sealed record OrderItemProcess(
 
-    [property: JsonPropertyName("orderId")]
+    [property: JsonPropertyName("correlation_id")]
     [property: Required]
-    Guid OrderId,
+    Guid CorrelationId,
 
     [property: JsonPropertyName("email")]
     [property: Required]
@@ -16,11 +16,11 @@ public sealed record OrderItemProcess(
     [property: JsonPropertyName("quantityChange")]
     [property: Required]
     [property: Range(typeof(int), "1", "999999999")]
-    int QuantityChange,
+    int Quantity,
 
-    [property: JsonPropertyName("productId")]
+    [property: JsonPropertyName("book_id")]
     [property: Required]
-    Guid ProductId,
+    Guid BookId,
 
     [property: JsonPropertyName("portion")]
     [property: Required]

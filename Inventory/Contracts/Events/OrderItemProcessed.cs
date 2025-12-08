@@ -5,17 +5,17 @@ namespace Inventory.Contracts.Events;
 
 public sealed record OrderItemProcessed(
 
-    [property: JsonPropertyName("orderId")]
+    [property: JsonPropertyName("correlation_id")]
     [property: Required]
-    Guid OrderId,
+    Guid CorrelationId,
 
     [property: JsonPropertyName("email")]
     [property: Required]
     string Email,
 
-    [property: JsonPropertyName("productId")]
+    [property: JsonPropertyName("book_id")]
     [property: Required]
-    Guid ProductId,
+    Guid BookId,
 
     [property: JsonPropertyName("quantity")]
     [property: Required]
@@ -24,14 +24,5 @@ public sealed record OrderItemProcessed(
 
     [property: JsonPropertyName("price")]
     [property: Required]
-    decimal Price,
-
-    [property: JsonPropertyName("portion")]
-    [property: Required]
-    [property: Range(0.0, 1.0)]
-    decimal Portion,
-
-    [property: JsonPropertyName("timestamp")]
-    [property: Required]
-    DateTime Timestamp
+    decimal Price
 );

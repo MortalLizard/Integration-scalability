@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Inventory.Database.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoc />[Index(nameof(Isbn), IsUnique = true)]
     public partial class InitialCreate : Migration
     {
         /// <inheritdoc />

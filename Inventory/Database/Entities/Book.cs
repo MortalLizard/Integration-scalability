@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Database.Entities;
 
-[Index(nameof(Isbn), IsUnique = true)]
 public class Book
 {
     public Book()
@@ -32,11 +31,11 @@ public class Book
     public required string Description { get; set; }
 
     [Required]
-    public DateOnly PublishedDate { get; set; }
+    public required DateOnly PublishedDate { get; set; }
 
     [Required]
     [Range(typeof(int), "0", "1000000")]
-    public int Quantity { get; set; }
+    public required int Quantity { get; set; }
 
     [Required]
     [Range(typeof(decimal), "0.01", "1000000")]

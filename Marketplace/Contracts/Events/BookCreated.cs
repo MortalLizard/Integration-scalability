@@ -25,7 +25,7 @@ public sealed record BookCreated(
     [property: Required]
     decimal Price,
 
-    [property: JsonPropertyName("publishedDate")]
+    [property: JsonPropertyName("published_date")]
     [property: Required]
     DateTime PublishedDate,
 

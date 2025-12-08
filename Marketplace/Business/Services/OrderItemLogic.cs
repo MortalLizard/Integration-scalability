@@ -12,7 +12,7 @@ public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer prod
 
     public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
     {
-        var updatedBook = await bookRepository.UpdateIsActiveAsync(orderItemProcess.ProductId, ct);
+        var updatedBook = await bookRepository.UpdateIsActiveAsync(orderItemProcess.CorrelationId, ct);
 
         if(updatedBook == null)
         {
@@ -20,12 +20,10 @@ public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer prod
         }
 
         var responsePayload = new OrderItemProcessed(
-            OrderId: orderItemProcess.OrderId,
+            CorrelationId: orderItemProcess.CorrelationId,
             Email: orderItemProcess.Email,
-            ProductId: orderItemProcess.ProductId,
-            Price: updatedBook.Price,
-            Portion: orderItemProcess.Portion,
-            Timestamp: DateTime.UtcNow
+            BookId: orderItemProcess.BookId,
+            Price: updatedBook.Price
         );
 
         var jsonMessage = JsonSerializer.Serialize(responsePayload);
