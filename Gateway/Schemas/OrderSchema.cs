@@ -25,7 +25,7 @@ public sealed class OrderSchema : AbstractJsonSchema
                         new JsonSchemaBuilder()
                             .Type(SchemaValueType.Object)
                             .AdditionalProperties(false)
-                            .Required("book_id", "quantity", "marketplace")
+                            .Required("book_id", "quantity", "marketplace", "price")
                             .Properties(
                                 ("book_id", new JsonSchemaBuilder().Type(SchemaValueType.String)),
                                 ("quantity", new JsonSchemaBuilder().Type(SchemaValueType.Integer)),
