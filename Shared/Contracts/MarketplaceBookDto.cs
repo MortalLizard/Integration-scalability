@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-namespace Gateway.Contracts;
+namespace Shared.Contracts;
 
 public sealed record MarketplaceBookDto
 {

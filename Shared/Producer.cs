@@ -6,23 +6,12 @@ namespace Shared;
 
 public class Producer : IAsyncDisposable
 {
-    private readonly IChannel _channel;
     private readonly IConnection _connection;
 
-    public Producer()
+    public Producer(IConnection connection)
     {
 
-        var factory = new ConnectionFactory
-        {
-            HostName = "rabbitmq",
-            Password = "rabbit_pw",
-            UserName = "rabbit",
-            VirtualHost = "/",
-
-        };
-
-        _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
-        _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+        _connection = connection;
 
 
 
@@ -31,7 +20,9 @@ public class Producer : IAsyncDisposable
 
     public async Task SendMessageAsync(string queueName, string message)
     {
-        _channel.QueueDeclareAsync(
+        await using var channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+
+        channel.QueueDeclareAsync(
             queue: queueName,
             durable: false,
             exclusive: false,
@@ -40,7 +31,7 @@ public class Producer : IAsyncDisposable
 
         var body = Encoding.UTF8.GetBytes(message);
 
-        await _channel.BasicPublishAsync(
+        await channel.BasicPublishAsync(
             exchange: "",
             routingKey: queueName,
             mandatory: false,
@@ -51,7 +42,5 @@ public class Producer : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await _channel.DisposeAsync();
-        await _connection.DisposeAsync();
     }
 }

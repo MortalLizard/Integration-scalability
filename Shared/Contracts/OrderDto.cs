@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Gateway.Contracts;
+namespace Shared.Contracts;
 
 public sealed record OrderDto
 {
@@ -9,7 +9,9 @@ public sealed record OrderDto
     [JsonPropertyName("buyer_email")]
     public required string BuyerEmail { get; set; }
     [JsonPropertyName("items")]
-    public required List<OrderlineDto> Items { get; set; }
-    public int TotalItems => Items.Sum(i => i.Amount);
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+
+    public List<OrderlineDto>? Items { get; set; }
+    public int TotalItems { get; set; }
 
 }

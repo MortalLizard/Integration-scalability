@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using Gateway.Contracts;
+using Shared.Contracts;
 using Gateway.Schemas;
 
 using Json.Schema;
@@ -19,7 +19,7 @@ namespace Gateway.Controllers
     public class BookController : ControllerBase
     {
         [HttpPost("marketplace")]
-        public IActionResult NewMarketplaceBook([FromBody] JsonElement jsonElement)
+        public IActionResult NewMarketplaceBook([FromBody] JsonElement jsonElement, [FromServices] Producer producer)
         {
             // validation input using schema validation
             var errors = MarketplaceBookSchema.Instance.Validate(jsonElement);
@@ -53,14 +53,13 @@ namespace Gateway.Controllers
 
             var outboundJson = JsonSerializer.Serialize(dto);
             //send it
-            var producer = new Producer();
             producer.SendMessageAsync("marketplace_books", outboundJson).GetAwaiter().GetResult();
 
             return Ok();
         }
 
         [HttpPost("neworder")]
-        public IActionResult NewOrder([FromBody] JsonElement jsonElement)
+        public IActionResult NewOrder([FromBody] JsonElement jsonElement, [FromServices] Producer producer)
         {
             // validation input using schema validation
             var errors = OrderSchema.Instance.Validate(jsonElement);
@@ -92,7 +91,6 @@ namespace Gateway.Controllers
                 Log.Error(ex, "Unexpected error during order deserialization");
                 return StatusCode(500, new { message = "Internal server error", error = ex.Message });
             }
-            var producer = new Producer();
 
             foreach (var orderLine in dto.Items)
             {
@@ -106,9 +104,12 @@ namespace Gateway.Controllers
                     producer.SendMessageAsync("inventory.order-item.process", ol).GetAwaiter().GetResult();
             }
             //unset the items to reduce message size
-            dto.Items.Clear();
+            dto.TotalItems = dto.Items.Count;
+            dto.Items = null;
             //serialize the order without items
             var outboundJson = JsonSerializer.Serialize(dto);
+
+
             //send it
             producer.SendMessageAsync("new-order.process", outboundJson).GetAwaiter().GetResult();
 
@@ -116,4 +117,5 @@ namespace Gateway.Controllers
         }
 
     }
+
 }

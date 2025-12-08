@@ -3,6 +3,7 @@ using System.Text.Json;
 using Serilog;
 
 using Shared;
+using Shared.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Services.AddSerilog();
 
+//create rabbitmq connection singleton and producer service
+builder.Services.AddRabbitInfrastructure();
 // Add services to the container.
 builder.Services.AddOpenApi();
 builder.Services.AddControllers().AddJsonOptions(options =>
