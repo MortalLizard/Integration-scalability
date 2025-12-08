@@ -10,4 +10,6 @@ public sealed record OrderlineDto
     public required int Amount { get; set; }
     [JsonPropertyName("marketplace")]
     public required bool Marketplace { get; set; }
+    [JsonIgnore]
+    public string? CorrelationId { get; set; }
 }

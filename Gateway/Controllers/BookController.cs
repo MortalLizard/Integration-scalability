@@ -8,6 +8,8 @@ using Gateway.Schemas;
 using Json.Schema;
 using Microsoft.AspNetCore.Mvc;
 
+using Serilog;
+
 using Shared;
 
 namespace Gateway.Controllers
@@ -23,6 +25,7 @@ namespace Gateway.Controllers
             var errors = MarketplaceBookSchema.Instance.Validate(jsonElement);
             if (errors is not null)
             {
+                Log.Error("Marketplace book payload failed schema validation: {Errors}", JsonSerializer.Serialize(errors));
                 return BadRequest(new { message = "Invalid payload", errors });
             }
 
@@ -39,11 +42,14 @@ namespace Gateway.Controllers
             }
             catch (JsonException ex)
             {
+                Log.Error(ex, "Deserialization failed for marketplace book payload: {Payload}", jsonElement.GetRawText());
                 return BadRequest(new { message = "Deserialization failed", error = ex.Message });
             }
 
             if (dto is null)
+            {
                 return BadRequest(new { message = "Payload deserialized to null" });
+            }
 
             var outboundJson = JsonSerializer.Serialize(dto);
             //send it
@@ -60,6 +66,7 @@ namespace Gateway.Controllers
             var errors = OrderSchema.Instance.Validate(jsonElement);
             if (errors is not null)
             {
+                Log.Warning("Order payload failed schema validation: {Errors}", JsonSerializer.Serialize(errors));
                 return BadRequest(new { message = "Invalid payload", errors });
             }
 
@@ -73,20 +80,37 @@ namespace Gateway.Controllers
                         PropertyNameCaseInsensitive = true
                     });
                 if (dto is null)
+                {
+                    Log.Warning("Order payload deserialized to null");
                     return BadRequest(new { message = "Payload deserialized to null" });
+                }
 
                 dto.OrderId = Guid.NewGuid().ToString();
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                Console.WriteLine(exception);
-                throw;
+                Log.Error(ex, "Unexpected error during order deserialization");
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
             }
+            var producer = new Producer();
 
+            foreach (var orderLine in dto.Items)
+            {
+                //serialize the orderline
+                orderLine.CorrelationId = dto.OrderId;
+                var ol = JsonSerializer.Serialize(orderLine);
+                //Send to the right topic
+                if (orderLine.Marketplace == true)
+                    producer.SendMessageAsync("marketplace.order-item.process", ol).GetAwaiter().GetResult();
+                else
+                    producer.SendMessageAsync("inventory.order-item.process", ol).GetAwaiter().GetResult();
+            }
+            //unset the items to reduce message size
+            dto.Items.Clear();
+            //serialize the order without items
             var outboundJson = JsonSerializer.Serialize(dto);
             //send it
-            var producer = new Producer();
-            producer.SendMessageAsync("orders", outboundJson).GetAwaiter().GetResult();
+            producer.SendMessageAsync("new-order.process", outboundJson).GetAwaiter().GetResult();
 
             return Ok(outboundJson);
         }
