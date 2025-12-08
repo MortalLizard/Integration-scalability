@@ -21,7 +21,6 @@ public class OrderItemLogic(IBookRepository bookRepository, Shared.Producer prod
 
         var responsePayload = new OrderItemProcessed(
             CorrelationId: orderItemProcess.CorrelationId,
-            Email: orderItemProcess.Email,
             BookId: orderItemProcess.BookId,
             Price: updatedBook.Price
         );

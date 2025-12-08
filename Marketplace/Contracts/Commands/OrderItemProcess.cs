@@ -9,10 +9,6 @@ public sealed record OrderItemProcess(
     [property: Required]
     Guid CorrelationId,
 
-    [property: JsonPropertyName("email")]
-    [property: Required]
-    string Email,
-
     [property: JsonPropertyName("book_id")]
     [property: Required]
     Guid BookId

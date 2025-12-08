@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using Shared.Contracts;
 using Gateway.Schemas;
-
-using Json.Schema;
 using Microsoft.AspNetCore.Mvc;
 
 using Serilog;
