@@ -1,5 +1,6 @@
 using RabbitMQ.Client;
 using System.Text;
+using Serilog;
 
 namespace Shared;
 
@@ -45,6 +46,7 @@ public class Producer : IAsyncDisposable
             mandatory: false,
             body: body);
 
+        Log.Information($"Message sent to queue: '{queueName}', with body: '{message}'");
     }
 
     public async ValueTask DisposeAsync()
