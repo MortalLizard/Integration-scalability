@@ -2,6 +2,8 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
+using Serilog;
+
 namespace Shared;
 
 public class Consumer : IAsyncDisposable
@@ -50,7 +52,7 @@ public class Consumer : IAsyncDisposable
                 attempts++;
                 if (attempts > 10) throw;
 
-                Console.WriteLine($"[Consumer] RabbitMQ not ready. Retrying in 5s... (Attempt {attempts})");
+                Log.Information($"[Consumer] RabbitMQ not ready. Retrying in 5s... (Attempt {attempts})");
                 await Task.Delay(5000, cancellationToken);
             }
         }
@@ -82,10 +84,12 @@ public class Consumer : IAsyncDisposable
                 await handler(msg, cancellationToken);
 
                 await channel.BasicAckAsync(ea.DeliveryTag, false, cancellationToken);
+
+                Log.Information($"Message processed: '{msg}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error processing message: {ex.Message}");
+                Log.Error($"Error processing message: {ex.Message}");
 
                 await channel.BasicAckAsync(ea.DeliveryTag, false, cancellationToken);
             }
@@ -97,7 +101,7 @@ public class Consumer : IAsyncDisposable
             consumer: asyncConsumer,
             cancellationToken: cancellationToken);
 
-        Console.WriteLine($"Consumer started on queue '{queueName}', tag='{consumerTag}', prefetch=1");
+        Log.Information($"Consumer started on queue '{queueName}', tag='{consumerTag}', prefetch=1");
 
         return new Consumer(connection, channel, queueName, consumerTag);
     }
