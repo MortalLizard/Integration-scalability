@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Marketplace.Contracts.Commands;
@@ -6,10 +5,10 @@ namespace Marketplace.Contracts.Commands;
 public sealed record OrderItemProcess(
 
     [property: JsonPropertyName("correlation_id")]
-    [property: Required]
+    [property: JsonRequired]
     Guid CorrelationId,
 
     [property: JsonPropertyName("book_id")]
-    [property: Required]
+    [property: JsonRequired]
     Guid BookId
 );

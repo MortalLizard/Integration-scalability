@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Inventory.Contracts.Events;
@@ -6,19 +5,18 @@ namespace Inventory.Contracts.Events;
 public sealed record OrderItemProcessed(
 
     [property: JsonPropertyName("correlation_id")]
-    [property: Required]
+    [property: JsonRequired]
     Guid CorrelationId,
 
     [property: JsonPropertyName("book_id")]
-    [property: Required]
+    [property: JsonRequired]
     Guid BookId,
 
     [property: JsonPropertyName("quantity")]
-    [property: Required]
-    [property: Range(typeof(int), "1", "999999999")]
+    [property: JsonRequired]
     int Quantity,
 
     [property: JsonPropertyName("price")]
-    [property: Required]
+    [property: JsonRequired]
     decimal Price
 );

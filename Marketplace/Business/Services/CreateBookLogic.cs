@@ -32,8 +32,7 @@ public class CreateBookLogic(IBookRepository bookRepository, Shared.Producer pro
             Price: createBook.Price,
             PublishedDate: createBook.PublishedDate,
             Description: createBook.Description,
-            IsActive: createdBook.IsActive,
-            Timestamp: DateTime.UtcNow
+            IsActive: createdBook.IsActive
         );
 
         var jsonMessage = JsonSerializer.Serialize(responsePayload);

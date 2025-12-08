@@ -1,43 +1,36 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Marketplace.Contracts.Events;
 
 public sealed record BookCreated(
     [property: JsonPropertyName("id")]
-    [property: Required]
+    [property: JsonRequired]
     Guid Id,
 
     [property: JsonPropertyName("title")]
-    [property: Required]
+    [property: JsonRequired]
     string Title,
 
     [property: JsonPropertyName("author")]
-    [property: Required]
+    [property: JsonRequired]
     string Author,
 
     [property: JsonPropertyName("isbn")]
-    [property: Required]
+    [property: JsonRequired]
     string Isbn,
 
     [property: JsonPropertyName("price")]
-    [property: Range(typeof(decimal), "0", "999999999")]
-    [property: Required]
+    [property: JsonRequired]
     decimal Price,
 
     [property: JsonPropertyName("published_date")]
-    [property: Required]
+    [property: JsonRequired]
     DateTime PublishedDate,
 
     [property: JsonPropertyName("description")]
     string? Description,
 
     [property: JsonPropertyName("is_active")]
-    [property: Required]
-    bool IsActive,
-
-    [property: JsonPropertyName("timestamp")]
-    [property: Required]
-    DateTime Timestamp
-
+    [property: JsonRequired]
+    bool IsActive
 );
