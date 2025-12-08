@@ -16,10 +16,6 @@
             - Rabbit__Port=5672
             - Rabbit__User=rabbit
             - Rabbit__Pass=rabbit_pw
-            - Cap__RetryCount=5
-            - Cap__SucceedMessageExpiredAfterSeconds=86400
-            - Cap__UseDashboard=true
-            - Cap__DashboardPath=/cap
         depends_on:
             - marketplace-db
             - rabbitmq
@@ -53,10 +49,6 @@
             - Rabbit__Port=5672
             - Rabbit__User=rabbit
             - Rabbit__Pass=rabbit_pw
-            - Cap__RetryCount=5
-            - Cap__SucceedMessageExpiredAfterSeconds=86400
-            - Cap__UseDashboard=true
-            - Cap__DashboardPath=/cap
         depends_on:
             - inventory-db
             - rabbitmq
