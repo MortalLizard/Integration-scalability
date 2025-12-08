@@ -16,6 +16,7 @@ builder.Services.AddSerilog();
 
 //create rabbitmq connection singleton and producer service
 builder.Services.AddRabbitInfrastructure();
+builder.Services.AddTransient<Producer>();
 // Add services to the container.
 builder.Services.AddOpenApi();
 builder.Services.AddControllers().AddJsonOptions(options =>

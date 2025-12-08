@@ -21,8 +21,6 @@ public static class RabbitServiceExtension
             return factory.CreateConnectionAsync().GetAwaiter().GetResult();
         });
 
-        services.AddTransient<Producer>();
-
         return services;
     }
 }
