@@ -6,6 +6,8 @@ using Marketplace.Database.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
+using Shared.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog as the default static logger
@@ -35,6 +37,9 @@ builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
         })
 );
 
+//create rabbitmq connection singleton and producer service
+builder.Services.AddRabbitInfrastructure();
+
 // Add consumer as hosted services
 builder.Services.AddHostedService<OrderItemConsumer>();
 builder.Services.AddHostedService<CreateBookConsumer>();
@@ -43,9 +48,6 @@ builder.Services.AddHostedService<CreateBookConsumer>();
 builder.Services.AddScoped<ICreateBookLogic, CreateBookLogic>();
 builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
-
-// Register Producer as a Singleton so the connection is shared
-builder.Services.AddSingleton<Shared.Producer>();
 
 var app = builder.Build();
 

@@ -13,9 +13,7 @@ public class Producer : IAsyncDisposable
 
         _connection = connection;
 
-
-
-        Console.WriteLine($"Producer started, attached to: localhost.");
+        Log.Information($"Producer started, attached to: localhost.");
     }
 
     public async Task SendMessageAsync(string queueName, string message)

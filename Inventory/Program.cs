@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 using Serilog;
 
+using Shared.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog as the default static logger
@@ -32,14 +34,14 @@ builder.Services.AddDbContextPool<InventoryDbContext>(options =>
         })
 );
 
+//create rabbitmq connection singleton and producer service
+builder.Services.AddRabbitInfrastructure();
+
 // Add MVC services
 builder.Services.AddControllersWithViews();
 
 // Register consumer as a hosted service
 builder.Services.AddHostedService<OrderItemConsumer>();
-
-// Register Producer as a Singleton so the connection is shared
-builder.Services.AddSingleton<Shared.Producer>();
 
 // Register inventory logicBookRepository
 builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
