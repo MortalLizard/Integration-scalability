@@ -5,19 +5,16 @@
             dockerfile: Marketplace/Dockerfile
         networks:
             - default
-            - marketplace-network
+            - shared-marketplace-network
         ports:
             - "8080:8080"
         environment:
+            - ConnectionStrings__Default=Server=shared-db;Database=MarketplaceDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;
+            - Db__Schema=marketplace
             - ASPNETCORE_URLS=http://+:8080
             - ASPNETCORE_ENVIRONMENT=Development
-            - ConnectionStrings__Default=Server=marketplace-db;Database=marketplace;User Id=sa;Password=Marketplace@123;TrustServerCertificate=True;
-            - Rabbit__Host=rabbitmq
-            - Rabbit__Port=5672
-            - Rabbit__User=rabbit
-            - Rabbit__Pass=rabbit_pw
         depends_on:
-            - marketplace-db
+            - shared-db
             - rabbitmq
 
     gateway:
@@ -31,7 +28,8 @@
         environment:
             - ASPNETCORE_URLS=http://+:8085
             - ASPNETCORE_ENVIRONMENT=Development
-
+        depends_on:
+            - rabbitmq
     search:
         build:
             context: .
@@ -44,107 +42,43 @@
         environment:
             - ASPNETCORE_URLS=http://+:8083
             - ASPNETCORE_ENVIRONMENT=Development
-            - ElasticSearch__Uri=http://search-db:9201
+            - ElasticSearch__Uri=http://localhost:9201
         depends_on:
-            - search-db
+            - elasticsearch
+            - rabbitmq
     inventory:
         build:
             context: .
             dockerfile: Inventory/Dockerfile
         networks:
             - default
-            - inventory-network
+            - shared-inventory-network
         ports:
             - "8081:8081"
         environment:
+            - ConnectionStrings__Default=Server=shared-db;Database=InventoryDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;
+            - Db__Schema=inventory
             - ASPNETCORE_URLS=http://+:8081
             - ASPNETCORE_ENVIRONMENT=Development
-            - ConnectionStrings__Default=Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;
-            - Rabbit__Host=rabbitmq
-            - Rabbit__Port=5672
-            - Rabbit__User=rabbit
-            - Rabbit__Pass=rabbit_pw
         depends_on:
-            - inventory-db
+            - shared-db
             - rabbitmq
 
-    billing:
-        build:
-            context: .
-            dockerfile: Billing/Dockerfile
-        networks:
-            - default
-            - billing-network
-        ports:
-            - "8082:8082"
-        environment:
-            - ASPNETCORE_URLS=http://+:8082
-            - ASPNETCORE_ENVIRONMENT=Development
-            - ConnectionStrings__Default=Server=billing-db;Database=billing;User Id=sa;Password=Billing@123;TrustServerCertificate=True;
-        depends_on:
-            - billing-db
-
-    marketplace-db:
+    shared-db:
         image: mcr.microsoft.com/mssql/server:2019-latest
-        container_name: marketplace-db
+        container_name: shared-db
         restart: unless-stopped
         environment:
             ACCEPT_EULA: "Y"
-            MSSQL_SA_PASSWORD: "Marketplace@123"
+            MSSQL_SA_PASSWORD: "Shared@123!"
         networks:
             - default
-            - marketplace-network
+            - shared-marketplace-network
+            - shared-inventory-network
         ports:
             - "14333:1433"
         volumes:
-            - marketplace_sql_data:/var/opt/mssql
-
-    billing-db:
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        container_name: billing-db
-        restart: unless-stopped
-        environment:
-            ACCEPT_EULA: "Y"
-            MSSQL_SA_PASSWORD: "Billing@123"
-            MSSQL_PID: "Developer"
-        networks:
-            - default
-            - billing-network
-        ports:
-            - "14334:1433"
-        volumes:
-            - billing_sql_data:/var/opt/mssql
-
-    inventory-db:
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        container_name: inventory-db
-        restart: unless-stopped
-        environment:
-            ACCEPT_EULA: "Y"
-            MSSQL_SA_PASSWORD: "Inventory@123"
-        networks:
-            - default
-            - inventory-network
-        ports:
-            - "14335:1433"
-        volumes:
-            - inventory_sql_data:/var/opt/mssql
-
-    search-db:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
-        container_name: search-db
-        restart: unless-stopped
-        environment:
-            - discovery.type=single-node
-            - xpack.security.enabled=false
-            - ES_JAVA_OPTS=-Xms512m -Xmx512m
-        networks:
-            - default
-            - search-network
-        ports:
-            - "9201:9201"
-        volumes:
-            - search_data:/usr/share/elasticsearch/data
+            - shared_sql_data:/var/opt/mssql
 
     filebeat:
         image: docker.elastic.co/beats/filebeat:8.15.0
@@ -202,16 +136,13 @@
 
 
 volumes:
-    marketplace_sql_data:
-    billing_sql_data:
-    inventory_sql_data:
+    shared_sql_data:
     search_data:
     elastic_data:
     filebeat_data:
 
 networks:
-    marketplace-network:
-    inventory-network:
-    billing-network:
+    shared-marketplace-network:
+    shared-inventory-network:
     search-network:
     default:
