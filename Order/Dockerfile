@@ -8,16 +8,16 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Billing/Billing.csproj", "Billing/"]
-RUN dotnet restore "Billing/Billing.csproj"
+RUN dotnet restore "Order/Order.csproj"
 COPY . .
-WORKDIR "/src/Billing"
-RUN dotnet build "./Billing.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/Order"
+RUN dotnet build "./Order.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Billing.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Order.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Billing.dll"]
+ENTRYPOINT ["dotnet", "Order.dll"]
