@@ -7,6 +7,7 @@ namespace Search.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Produces("application/json")]
 public class BookController : ControllerBase
 {
     private readonly ElasticsearchClient _elastic;
@@ -35,6 +36,7 @@ public class BookController : ControllerBase
     [HttpPost("seed")]
     public async Task<IActionResult> SeedBooks()
     {
+
         var now = DateTime.UtcNow;
 
         var book = new Book

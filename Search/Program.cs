@@ -1,5 +1,7 @@
 using Elastic.Clients.Elasticsearch;
 
+using Search.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,13 +10,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
 //ELasticsearch client
-builder.Services.AddSingleton(sp =>
-{
-    var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9201"))
-        .DefaultIndex("books"); // optional default index
+builder.Services.AddElasticsearch();
 
-    return new ElasticsearchClient(settings);
-});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -42,7 +42,7 @@
         environment:
             - ASPNETCORE_URLS=http://+:8083
             - ASPNETCORE_ENVIRONMENT=Development
-            - ElasticSearch__Uri=http://localhost:9201
+            - ElasticSearch__Uri=http://elasticsearch:9200
         depends_on:
             - elasticsearch
             - rabbitmq
@@ -100,7 +100,7 @@
             - shared_sql_data:/var/opt/mssql
 
     filebeat:
-        image: docker.elastic.co/beats/filebeat:8.15.0
+        image: docker.elastic.co/beats/filebeat:9.0.0
         container_name: filebeat
         user: root
         depends_on:
@@ -112,10 +112,13 @@
             - /var/lib/docker/containers:/var/lib/docker/containers:ro
             - /var/run/docker.sock:/var/run/docker.sock:ro
             - filebeat_data:/usr/share/filebeat/data
-        command: [ "filebeat", "-e", "-strict.perms=false" ]
+        command:
+            - filebeat
+            - -e
+            - --strict.perms=false
 
     elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+        image: docker.elastic.co/elasticsearch/elasticsearch:9.0.0
         container_name: elasticsearch
         environment:
             - discovery.type=single-node
@@ -127,9 +130,10 @@
             - elastic_data:/usr/share/elasticsearch/data
         networks:
             - default
+            - search-network
 
     kibana:
-        image: docker.elastic.co/kibana/kibana:8.15.0
+        image: docker.elastic.co/kibana/kibana:9.0.0
         container_name: kibana
         environment:
             - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
