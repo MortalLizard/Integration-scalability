@@ -15,4 +15,6 @@ public sealed record OrderlineDto
     public string? CorrelationId { get; set; }
     [JsonPropertyName("price")]
     public required decimal Price { get; set; }
+    //evt seller id
+
 }

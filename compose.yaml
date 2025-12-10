@@ -32,6 +32,21 @@
             - ASPNETCORE_URLS=http://+:8085
             - ASPNETCORE_ENVIRONMENT=Development
 
+    search:
+        build:
+            context: .
+            dockerfile: Search/Dockerfile
+        networks:
+            - default
+            - search-network
+        ports:
+            - "8083:8083"
+        environment:
+            - ASPNETCORE_URLS=http://+:8083
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ElasticSearch__Uri=http://search-db:9201
+        depends_on:
+            - search-db
     inventory:
         build:
             context: .
@@ -116,20 +131,20 @@
             - inventory_sql_data:/var/opt/mssql
 
     search-db:
-        image: mongo:7
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
         container_name: search-db
         restart: unless-stopped
         environment:
-            MONGO_INITDB_ROOT_USERNAME: search_root
-            MONGO_INITDB_ROOT_PASSWORD: search_root_pw
-            MONGO_INITDB_DATABASE: search
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+            - ES_JAVA_OPTS=-Xms512m -Xmx512m
         networks:
             - default
             - search-network
         ports:
-            - "27018:27017"
+            - "9201:9201"
         volumes:
-            - search_data:/data/db
+            - search_data:/usr/share/elasticsearch/data
 
     filebeat:
         image: docker.elastic.co/beats/filebeat:8.15.0
