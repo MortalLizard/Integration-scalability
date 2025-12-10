@@ -59,6 +59,22 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var db = services.GetRequiredService<InventoryDbContext>();
+        db.Database.Migrate();
+        Log.Information("Database migrations applied.");
+    }
+    catch (Exception ex)
+    {
+        Log.Fatal(ex, "An error occurred while applying database migrations.");
+        throw;
+    }
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

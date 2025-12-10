@@ -59,6 +59,22 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var db = services.GetRequiredService<MarketplaceDbContext>();
+        db.Database.Migrate();
+        Log.Information("Database migrations applied.");
+    }
+    catch (Exception ex)
+    {
+        Log.Fatal(ex, "An error occurred while applying database migrations.");
+        throw;
+    }
+}
+
 app.UseHttpsRedirection();
 
 app.Run();
