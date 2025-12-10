@@ -1,4 +1,6 @@
 ﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
+
 using Microsoft.AspNetCore.Mvc;
 
 using Search.Models;
@@ -58,4 +60,27 @@ public class BookController : ControllerBase
 
         return Ok(new { indexed = response.Index });
     }
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchBooks([FromQuery] string query)
+    {
+        var response = await _elastic.SearchAsync<Book>(s => s
+            .Indices("books")
+            .Query(q => q
+                .Match(m => m
+                    .Field(f => f.Title)
+                    .Query(query)
+                )
+            )
+        );
+
+        if (!response.IsValidResponse)
+            return StatusCode(500, response.ElasticsearchServerError?.Error.Reason);
+
+        return Ok(new
+        {
+            total = response.HitsMetadata?.Total ?? 0,
+            items = response.Documents
+        });
+    }
+
 }
