@@ -20,7 +20,7 @@ builder.Services.AddSerilog();
 
 // Setup database connection
 string connectionString = builder.Configuration.GetConnectionString("InventoryDatabase")
-                          ?? "Server=inventory-db;Database=inventory;User Id=sa;Password=Inventory@123;TrustServerCertificate=True;";
+                          ?? "Server=shared-db;Database=InventoryDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;";
 
 builder.Services.AddDbContextPool<InventoryDbContext>(options =>
     options.UseSqlServer(

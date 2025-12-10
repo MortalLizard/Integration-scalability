@@ -23,7 +23,7 @@ builder.Services.AddOpenApi();
 
 // Setup db
 string connectionString = builder.Configuration.GetConnectionString("MarketplaceDatabase")
-                          ?? "Server=marketplace-db;Database=marketplace;User Id=sa;Password=Marketplace@123;TrustServerCertificate=True;";
+                          ?? "Server=shared-db;Database=MarketplaceDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;";
 
 builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
     options.UseSqlServer(

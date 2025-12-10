@@ -7,7 +7,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Billing/Billing.csproj", "Billing/"]
+COPY ["Order/Order.csproj", "Order/"]
 RUN dotnet restore "Order/Order.csproj"
 COPY . .
 WORKDIR "/src/Order"
