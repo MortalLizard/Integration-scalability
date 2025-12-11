@@ -34,6 +34,7 @@
     <ItemGroup>
       <Folder Include="Contracts\Dtos\" />
       <Folder Include="Database\Migrations\" />
+      <Folder Include="Test\" />
       <Folder Include="obj\Debug\net10.0\" />
     </ItemGroup>
 

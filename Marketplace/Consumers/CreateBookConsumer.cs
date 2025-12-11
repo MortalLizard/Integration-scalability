@@ -11,7 +11,7 @@ public class CreateBookConsumer : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IConsumer _consumer; // the RabbitMQ consumer we built
-    private const string QueueName = "marketplace.create-book";
+    private const string QueueName = "marketplace.create-book"; // Should inpmlement a better way to manage queue names such as a config file
 
     public CreateBookConsumer(IServiceScopeFactory serviceScopeFactory, IConsumer consumer)
     {
