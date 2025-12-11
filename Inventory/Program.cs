@@ -38,7 +38,7 @@ builder.Services.AddDbContextPool<InventoryDbContext>(options =>
 //create rabbitmq connection singleton and producer service
 builder.Services.AddRabbitInfrastructure();
 builder.Services.AddSingleton<Producer>();
-builder.Services.AddTransient<Consumer>();
+builder.Services.AddTransient<IConsumer>();
 
 // Add MVC services
 builder.Services.AddControllersWithViews();

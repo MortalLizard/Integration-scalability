@@ -10,10 +10,10 @@ namespace Marketplace.Consumers;
 public class CreateBookConsumer : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly Consumer _consumer; // the RabbitMQ consumer we built
+    private readonly IConsumer _consumer; // the RabbitMQ consumer we built
     private const string QueueName = "marketplace.create-book";
 
-    public CreateBookConsumer(IServiceScopeFactory serviceScopeFactory, Consumer consumer)
+    public CreateBookConsumer(IServiceScopeFactory serviceScopeFactory, IConsumer consumer)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _consumer = consumer;
