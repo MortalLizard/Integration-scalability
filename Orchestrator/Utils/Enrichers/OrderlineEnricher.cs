@@ -1,5 +1,4 @@
 using Orchestrator.Gateway.DTOs;
-
 using Shared.Contracts.OrderBook;
 
 namespace Orchestrator.Utils.Enrichers;
