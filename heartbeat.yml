@@ -1,0 +1,18 @@
+heartbeat.run_from:
+    id: dev-docker
+    geo:
+        name: "dev-docker"
+
+heartbeat.monitors:
+    - type: http
+      id: orchestrator-dev
+      name: "Orchestrator (dev)"
+      enabled: true
+      schedule: '@every 10s'
+      urls: ["http://orchestrator:8085/api/health"]
+      check.response:
+          status: 200
+      tags: ["dev", "orchestrator"]
+
+output.elasticsearch:
+    hosts: ["http://elasticsearch:9200"]
