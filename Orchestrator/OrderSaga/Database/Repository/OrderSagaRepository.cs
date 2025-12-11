@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using Orchestrator.OrderSaga.Database.DbContext;
+using Orchestrator.OrderSaga.Database.Entities;
 
 namespace Orchestrator.OrderSaga.Database.Repository;
 

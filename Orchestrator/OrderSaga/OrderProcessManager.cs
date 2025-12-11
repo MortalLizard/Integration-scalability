@@ -1,4 +1,5 @@
 using Orchestrator.Gateway.DTOs;
+using Orchestrator.OrderSaga.Database.Entities;
 using Orchestrator.OrderSaga.Database.Repository;
 using Orchestrator.OrderSaga.Utils.Enrichers;
 using Orchestrator.OrderSaga.Utils.Mappers;

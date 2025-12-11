@@ -1,6 +1,6 @@
 ﻿using Json.Schema;
 
-namespace Orchestrator.Schemas;
+namespace Orchestrator.Gateway.Schemas;
 
 public sealed class OrderSchema : AbstractJsonSchema
 {

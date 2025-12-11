@@ -17,19 +17,22 @@
             - shared-db
             - rabbitmq
 
-    gateway:
+    orchestrator:
         build:
             context: .
-            dockerfile: Gateway/Dockerfile
+            dockerfile: Orchestrator/Dockerfile
         networks:
             - default
         ports:
             - "8085:8085"
         environment:
+            - ConnectionStrings__Default=Server=shared-db;Database=OrderDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;
+            - Db__Schema=order
             - ASPNETCORE_URLS=http://+:8085
             - ASPNETCORE_ENVIRONMENT=Development
         depends_on:
             - rabbitmq
+
     search:
         build:
             context: .
@@ -60,24 +63,6 @@
             - ConnectionStrings__Default=Server=shared-db;Database=InventoryDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;
             - Db__Schema=inventory
             - ASPNETCORE_URLS=http://+:8081
-            - ASPNETCORE_ENVIRONMENT=Development
-        depends_on:
-            - shared-db
-            - rabbitmq
-
-    order:
-        build:
-            context: .
-            dockerfile: Order/Dockerfile
-        networks:
-            - default
-            - shared-marketplace-network
-        ports:
-            - "8084:8084"
-        environment:
-            - ConnectionStrings__Default=Server=shared-db;Database=OrderDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;
-            - Db__Schema=marketplace
-            - ASPNETCORE_URLS=http://+:8083
             - ASPNETCORE_ENVIRONMENT=Development
         depends_on:
             - shared-db

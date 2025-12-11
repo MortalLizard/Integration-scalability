@@ -1,3 +1,5 @@
+using Orchestrator.OrderSaga.Database.Entities;
+
 namespace Orchestrator.OrderSaga.Database.Repository;
 
 public interface IOrderSagaRepository

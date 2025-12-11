@@ -1,4 +1,4 @@
-namespace Orchestrator.OrderSaga;
+namespace Orchestrator.OrderSaga.Database.Entities;
 
 public enum OrderSagaStatus
 {

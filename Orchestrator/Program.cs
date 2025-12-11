@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 using Orchestrator.OrderSaga;
 using Orchestrator.OrderSaga.Database.DbContext;
 using Orchestrator.OrderSaga.Database.Repository;
@@ -15,7 +17,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Services.AddSerilog();
 
 // Setup db
-string connectionString = builder.Configuration.GetConnectionString("MarketplaceDatabase")
+string connectionString = builder.Configuration.GetConnectionString("Default")
                           ?? "Server=shared-db;Database=OrderDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;";
 
 builder.Services.AddDbContextPool<OrderDbContext>(options =>
@@ -47,10 +49,25 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var db = services.GetRequiredService<OrderDbContext>();
+        db.Database.Migrate();
+        Log.Information("Database migrations applied.");
+    }
+    catch (Exception ex)
+    {
+        Log.Fatal(ex, "An error occurred while applying database migrations.");
+        throw;
+    }
 }
 
 app.UseHttpsRedirection();

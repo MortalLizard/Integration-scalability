@@ -1,8 +1,8 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
+
 using Json.Schema;
 
-namespace Orchestrator.Schemas;
+namespace Orchestrator.Gateway.Schemas;
 
 public abstract class AbstractJsonSchema
 {

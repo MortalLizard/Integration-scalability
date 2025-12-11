@@ -1,4 +1,5 @@
 using Orchestrator.Gateway.DTOs;
+using Orchestrator.OrderSaga.Database.Entities;
 
 namespace Orchestrator.OrderSaga.Utils.Mappers;
 

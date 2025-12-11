@@ -3,7 +3,8 @@ using Gateway.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Orchestrator.Gateway.DTOs;
 using Orchestrator.Gateway.Mappers;
-using Orchestrator.Schemas;
+using Orchestrator.Gateway.Schemas;
+using Orchestrator.OrderSaga;
 
 using Serilog;
 using Shared;

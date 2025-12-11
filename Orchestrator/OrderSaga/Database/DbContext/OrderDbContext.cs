@@ -1,9 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using Orchestrator.OrderSaga.Database.Entities;
 
 namespace Orchestrator.OrderSaga.Database.DbContext;
 
-public sealed class OrderDbContext(DbContextOptions<OrderDbContext> options) : Microsoft.EntityFrameworkCore.DbContext(options)
+public sealed class OrderDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
+    public OrderDbContext(DbContextOptions<OrderDbContext> options)
+        : base(options)
+    {
+    }
+
     public DbSet<OrderSagaState> OrderSagas => Set<OrderSagaState>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -18,7 +24,7 @@ public sealed class OrderDbContext(DbContextOptions<OrderDbContext> options) : M
 
             e.Property(x => x.BuyerEmail)
                 .IsRequired()
-                .HasMaxLength(320); // enough for email
+                .HasMaxLength(256);
 
             e.Property(x => x.Status)
                 .HasConversion<string>()
