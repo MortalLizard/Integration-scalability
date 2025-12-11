@@ -1,13 +1,15 @@
 using System.Text.Json;
 using Shared.Contracts;
-using Gateway.Schemas;
+
 using Microsoft.AspNetCore.Mvc;
+
+using Orchestrator.Schemas;
 
 using Serilog;
 
 using Shared;
 
-namespace Gateway.Controllers
+namespace Orchestrator.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -14,7 +14,7 @@ namespace Search.Controllers
             {
                 status = "Healthy",
                 timestamp = DateTime.UtcNow,
-                application = "Gateway",
+                application = "Orchestrator",
                 version = "1.0.0"
             };
             return Ok(healthInfo);

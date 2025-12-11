@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Json.Schema;
 
-namespace Gateway.Schemas;
+namespace Orchestrator.Schemas;
 
 public abstract class AbstractJsonSchema
 {

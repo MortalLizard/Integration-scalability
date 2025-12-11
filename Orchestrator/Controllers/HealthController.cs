@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gateway.Controllers
+namespace Orchestrator.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -14,7 +14,7 @@ namespace Gateway.Controllers
             {
                 status = "Healthy",
                 timestamp = DateTime.UtcNow,
-                application = "Gateway",
+                application = "Orchestrator",
                 version = "1.0.0"
             };
             return Ok(healthInfo);
