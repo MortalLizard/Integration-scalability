@@ -11,7 +11,7 @@ public interface IBookRepository
     /// <summary>
     /// Retrieves a book by its identifier, or null if not found.
     /// </summary>
-    Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Book? GetById(Guid id);
 
     /// <summary>
     /// Updates the IsActive flag of a book by its identifier.

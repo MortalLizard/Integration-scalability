@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Marketplace.Contracts.Events;
+namespace Shared.Contracts.CreateBook;
 
 public sealed record BookCreated(
     [property: JsonPropertyName("id")]
@@ -28,9 +28,5 @@ public sealed record BookCreated(
     DateTime PublishedDate,
 
     [property: JsonPropertyName("description")]
-    string? Description,
-
-    [property: JsonPropertyName("is_active")]
-    [property: JsonRequired]
-    bool IsActive
+    string? Description
 );

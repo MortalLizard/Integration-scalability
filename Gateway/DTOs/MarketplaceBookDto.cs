@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-namespace Shared.Contracts;
+
+namespace Gateway.DTOs;
 
 public sealed record MarketplaceBookDto
 {
@@ -9,9 +10,9 @@ public sealed record MarketplaceBookDto
     public required string Author { get; set; }
     [JsonPropertyName("isbn")]
     public required string Isbn { get; set; }
-    [JsonPropertyName("publisher")]
+    [JsonPropertyName("price")]
     public required decimal Price { get; set; }
-    [JsonPropertyName("publishedDate")]
+    [JsonPropertyName("published_date")]
     public required DateTime PublishedDate { get; set; }
     [JsonPropertyName("description")]
     public string? Description { get; set; }

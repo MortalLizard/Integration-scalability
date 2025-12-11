@@ -2,6 +2,9 @@ using Inventory.Consumers;
 using Inventory.Database.Services;
 using Inventory.Database;
 using Inventory.Logic;
+
+using MassTransit;
+
 using Microsoft.EntityFrameworkCore;
 
 using Serilog;
@@ -19,7 +22,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Services.AddSerilog();
 
 // Setup database connection
-string connectionString = builder.Configuration.GetConnectionString("InventoryDatabase")
+string connectionString = builder.Configuration.GetConnectionString("Default")
                           ?? "Server=shared-db;Database=InventoryDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;";
 
 builder.Services.AddDbContextPool<InventoryDbContext>(options =>
@@ -35,19 +38,31 @@ builder.Services.AddDbContextPool<InventoryDbContext>(options =>
         })
 );
 
-//create rabbitmq connection singleton and producer service
-builder.Services.AddRabbitInfrastructure();
-builder.Services.AddSingleton<Producer>();
-builder.Services.AddTransient<Consumer>();
+// Setup rabbitmq connection
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<OrderlineConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbitmq", "/", h =>
+        {
+            h.Username("rabbit");
+            h.Password("rabbit_pw");
+        });
+
+        cfg.ReceiveEndpoint("inventory-orderline-process", e =>
+        {
+            e.ConfigureConsumer<OrderlineConsumer>(context);
+        });
+    });
+});
 
 // Add MVC services
 builder.Services.AddControllersWithViews();
 
-// Register consumer as a hosted service
-builder.Services.AddHostedService<OrderItemConsumer>();
-
 // Register inventory logicBookRepository
-builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
+builder.Services.AddScoped<IOrderlineLogic, OrderlineLogic>();
 builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();

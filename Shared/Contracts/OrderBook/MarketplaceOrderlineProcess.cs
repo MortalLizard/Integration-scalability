@@ -1,16 +1,15 @@
 using System.Text.Json.Serialization;
 
-namespace Marketplace.Contracts.Events;
+namespace Shared.Contracts.OrderBook;
 
-public sealed record OrderItemProcessed(
+public sealed record MarketplaceOrderlineProcess(
+    [property: JsonPropertyName("book_id")]
+    [property: JsonRequired]
+    Guid BookId,
 
     [property: JsonPropertyName("correlation_id")]
     [property: JsonRequired]
     Guid CorrelationId,
-
-    [property: JsonPropertyName("book_id")]
-    [property: JsonRequired]
-    Guid BookId,
 
     [property: JsonPropertyName("price")]
     [property: JsonRequired]

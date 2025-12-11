@@ -16,13 +16,14 @@ public sealed class MarketplaceBookSchema : AbstractJsonSchema
         return new JsonSchemaBuilder()
             .Type(SchemaValueType.Object)
             .AdditionalProperties(false)
-            .Required("title", "author", "price", "isbn", "description", "publishedDate")
+            .Required("title", "author", "price", "isbn", "published_date")
             .Properties(
                 ("title", new JsonSchemaBuilder().Type(SchemaValueType.String)),
                 ("author", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                ("price", new JsonSchemaBuilder().Type(SchemaValueType.Number)),
+                ("price", new JsonSchemaBuilder().Type(SchemaValueType.Number).Minimum(0).Maximum(100000)),
                 ("isbn", new JsonSchemaBuilder().Type(SchemaValueType.String)),
-                ("publishedDate", new JsonSchemaBuilder().Type(SchemaValueType.String).Format("date-time"))
+                ("description", new JsonSchemaBuilder().Type(SchemaValueType.String)),
+                ("published_date", new JsonSchemaBuilder().Type(SchemaValueType.String).Format("date-time"))
             )
             .Build();
     }

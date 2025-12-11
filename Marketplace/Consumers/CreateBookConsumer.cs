@@ -1,51 +1,15 @@
-using System.Text.Json;
 using Marketplace.Business.Interfaces;
-using Marketplace.Contracts.Commands;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Shared;
+using MassTransit;
+using Shared.Contracts.CreateBook;
 
 namespace Marketplace.Consumers;
 
-public class CreateBookConsumer : BackgroundService
+public class CreateBookConsumer(IServiceScopeFactory serviceScopeFactory) : IConsumer<BookCreate>
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly Consumer _consumer; // the RabbitMQ consumer we built
-    private const string QueueName = "marketplace.create-book";
-
-    public CreateBookConsumer(IServiceScopeFactory serviceScopeFactory, Consumer consumer)
+    public async Task Consume(ConsumeContext<BookCreate> context)
     {
-        _serviceScopeFactory = serviceScopeFactory;
-        _consumer = consumer;
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        await _consumer.StartAsync(
-            queueName: QueueName,
-            handler: async (message, ct) =>
-            {
-                using var scope = _serviceScopeFactory.CreateScope();
-                var createBookLogic = scope.ServiceProvider.GetRequiredService<ICreateBookLogic>();
-
-                var dto = JsonSerializer.Deserialize<CreateBook>(message)!;
-                await createBookLogic.CreateBook(dto, ct);
-            },
-            cancellationToken: stoppingToken
-        );
-
-        try
-        {
-            await Task.Delay(Timeout.Infinite, stoppingToken);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-    }
-
-    public override async Task StopAsync(CancellationToken cancellationToken)
-    {
-        await _consumer.DisposeAsync(); // stop consumer properly
-        await base.StopAsync(cancellationToken);
+        using var scope = serviceScopeFactory.CreateScope();
+        var orderItemLogic = scope.ServiceProvider.GetRequiredService<ICreateBookLogic>();
+        await orderItemLogic.CreateBook(context.Message, context.CancellationToken);
     }
 }

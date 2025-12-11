@@ -3,6 +3,9 @@ using Marketplace.Business.Interfaces;
 using Marketplace.Business.Services;
 using Marketplace.Database.Repositories;
 using Marketplace.Database.DBContext;
+
+using MassTransit;
+
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -22,7 +25,7 @@ builder.Services.AddSerilog();
 builder.Services.AddOpenApi();
 
 // Setup db
-string connectionString = builder.Configuration.GetConnectionString("MarketplaceDatabase")
+string connectionString = builder.Configuration.GetConnectionString("Default")
                           ?? "Server=shared-db;Database=MarketplaceDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;";
 
 builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
@@ -38,18 +41,34 @@ builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
         })
 );
 
-//create rabbitmq connection singleton and producer service
-builder.Services.AddRabbitInfrastructure();
-builder.Services.AddSingleton<Producer>();
-builder.Services.AddTransient<Consumer>();
+// Setup rabbitmq connection
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<OrderlineConsumer>();
+    x.AddConsumer<CreateBookConsumer>();
 
-// Add consumer as hosted services
-builder.Services.AddHostedService<OrderItemConsumer>();
-builder.Services.AddHostedService<CreateBookConsumer>();
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbitmq", "/", h =>
+        {
+            h.Username("rabbit");
+            h.Password("rabbit_pw");
+        });
+
+        cfg.ReceiveEndpoint("marketplace-orderline-process", e =>
+        {
+            e.ConfigureConsumer<OrderlineConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("marketplace-book-create", e =>
+        {
+            e.ConfigureConsumer<CreateBookConsumer>(context);
+        });
+    });
+});
 
 // Add services for dependency injection
 builder.Services.AddScoped<ICreateBookLogic, CreateBookLogic>();
-builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
+builder.Services.AddScoped<IOrderlineLogic, OrderlineLogic>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 
 var app = builder.Build();

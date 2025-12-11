@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Inventory.Contracts.Events;
+namespace Shared.Contracts.OrderBook;
 
-public sealed record OrderItemProcessed(
+public sealed record InventoryOrderlineProcessed(
 
     [property: JsonPropertyName("correlation_id")]
     [property: JsonRequired]

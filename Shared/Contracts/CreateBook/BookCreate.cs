@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Marketplace.Contracts.Commands;
+namespace Shared.Contracts.CreateBook;
 
-public sealed record CreateBook(
+public sealed record BookCreate(
     [property: JsonPropertyName("title")]
     [property: JsonRequired]
     string Title,

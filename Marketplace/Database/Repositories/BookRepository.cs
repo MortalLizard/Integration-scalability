@@ -25,11 +25,11 @@ public class BookRepository(MarketplaceDbContext dbContext) : IBookRepository
         return entryCount > 0 ? book : null;
     }
 
-    public async Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public Book? GetById(Guid id)
     {
-        return await dbContext.Books
+        return dbContext.Books
             .AsNoTracking()
-            .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+            .FirstOrDefault(b => b.Id == id);
     }
 
     public async Task<bool> UpdateIsActiveAsync(Guid id, decimal expectedPrice, CancellationToken cancellationToken = default)
