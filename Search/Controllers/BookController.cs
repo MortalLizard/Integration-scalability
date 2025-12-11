@@ -34,37 +34,18 @@ public class BookController : ControllerBase
         return Ok(response.Documents);
     }
 
-    // POST api/book/seed
-    [HttpPost("seed")]
-    public async Task<IActionResult> SeedBooks()
-    {
-
-        var now = DateTime.UtcNow;
-
-        var book = new Book
-        {
-            Title = "Full-Text Search with .NET",
-            Author = "Bob",
-            Isbn = "9780000000002",
-            Price = 29.99m,
-            PublishedDate = now.AddMonths(-6),
-            Description = "Full-text search patterns in C#.",
-            Origin = "internal",
-            SellerId = "seller-2"
-        };
-
-        var response = await _elastic.IndexAsync(book, x => x.Index("books"));
-
-        if (!response.IsValidResponse)
-            return StatusCode(500, response.ElasticsearchServerError?.Error.Reason);
-
-        return Ok(new { indexed = response.Index });
-    }
     [HttpGet("search")]
-    public async Task<IActionResult> SearchBooks([FromQuery] string query)
+    public async Task<IActionResult> SearchBooks(
+        [FromQuery] string query,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
+        var from = (page - 1) * pageSize;
+
         var response = await _elastic.SearchAsync<Book>(s => s
             .Indices("books")
+            .From(from)
+            .Size(pageSize)
             .Query(q => q
                 .MultiMatch(m => m
                     .Fields(new[] { "title", "description" })
@@ -79,8 +60,12 @@ public class BookController : ControllerBase
         return Ok(new
         {
             total = response.HitsMetadata?.Total ?? 0,
+            page,
+            pageSize,
             items = response.Documents
         });
     }
 
 }
+
+
