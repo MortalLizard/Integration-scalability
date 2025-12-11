@@ -2,7 +2,7 @@ using Gateway.DTOs;
 
 using Shared.Contracts.CreateBook;
 
-namespace Orchestrator.Utils.Mappers;
+namespace Orchestrator.Gateway.Mappers;
 
 public static class BookMapper
 {

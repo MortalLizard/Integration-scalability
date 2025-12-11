@@ -1,6 +1,4 @@
-using Orchestrator.OrderSaga;
-
-namespace Orchestrator.OrderSaga.Repository;
+namespace Orchestrator.OrderSaga.Database.Repository;
 
 public interface IOrderSagaRepository
 {

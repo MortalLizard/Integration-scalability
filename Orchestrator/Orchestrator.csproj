@@ -31,7 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="OrderSaga\Entities\" />
+      <Folder Include="OrderSaga\Database\Entities\" />
+      <Folder Include="OrderSaga\Utils\" />
     </ItemGroup>
 
 </Project>

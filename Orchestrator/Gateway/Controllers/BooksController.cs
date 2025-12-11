@@ -2,9 +2,8 @@ using System.Text.Json;
 using Gateway.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Orchestrator.Gateway.DTOs;
+using Orchestrator.Gateway.Mappers;
 using Orchestrator.Schemas;
-using Orchestrator.Utils.Enrichers;
-using Orchestrator.Utils.Mappers;
 
 using Serilog;
 using Shared;

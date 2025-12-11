@@ -1,7 +1,6 @@
 using Orchestrator.Gateway.DTOs;
-using Orchestrator.OrderSaga;
 
-namespace Orchestrator.Utils.Mappers;
+namespace Orchestrator.OrderSaga.Utils.Mappers;
 
 public static class OrderToSagaStateMapper
 {
