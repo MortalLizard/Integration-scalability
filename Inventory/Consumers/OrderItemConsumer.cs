@@ -8,10 +8,10 @@ namespace Inventory.Consumers;
 public class OrderItemConsumer : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly Consumer _consumer;
+    private readonly IConsumer _consumer;
     private const string queueName = "inventory.order-item.process";
 
-    public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory, Consumer consumer)
+    public OrderItemConsumer(IServiceScopeFactory serviceScopeFactory, IConsumer consumer)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _consumer = consumer;

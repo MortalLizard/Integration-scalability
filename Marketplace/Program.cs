@@ -44,7 +44,7 @@ builder.Services.AddDbContextPool<MarketplaceDbContext>(options =>
 //create rabbitmq connection singleton and producer service
 builder.Services.AddRabbitInfrastructure();
 builder.Services.AddSingleton<Producer>();
-builder.Services.AddTransient<Consumer>();
+builder.Services.AddTransient<IConsumer>();
 
 // Add consumer as hosted services
 builder.Services.AddHostedService<OrderItemConsumer>();

@@ -1,11 +1,11 @@
-﻿using System.Text;
+using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Serilog;
 
 namespace Shared;
 
-public class Consumer : IAsyncDisposable
+public class Consumer : IConsumer
 {
     private readonly IConnection _connection;
     private IChannel? _channel;
