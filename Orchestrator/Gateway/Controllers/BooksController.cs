@@ -13,7 +13,7 @@ namespace Orchestrator.Gateway.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BookController : ControllerBase
+    public class BooksController : ControllerBase
     {
         [HttpPost("marketplace")]
         public IActionResult NewMarketplaceBook([FromBody] JsonElement jsonElement, [FromServices] Producer producer)
@@ -42,7 +42,7 @@ namespace Orchestrator.Gateway.Controllers
         }
 
         [HttpPost("neworder")]
-        public IActionResult NewOrder([FromBody] JsonElement jsonElement, [FromServices] Producer producer)
+        public IActionResult NewOrder([FromBody] JsonElement jsonElement, [FromServices] IOrderProcessManager pm, CancellationToken ct)
         {
             // validation input using schema validation
             var errors = OrderSchema.Instance.Validate(jsonElement);
@@ -60,19 +60,7 @@ namespace Orchestrator.Gateway.Controllers
                 return BadRequest(new { message = "Payload deserialized to null" });
             }
 
-            var orderMessage = dto.ToOrderMessage();
-
-            foreach (var orderLine in dto.Items)
-            {
-                // Route to the right service
-                if (orderLine.Marketplace == true)
-                    producer.SendMessageAsync("marketplace.order-item.process", orderLine.ToMarketplaceOrderlineProcess(orderMessage.OrderId)).GetAwaiter().GetResult();
-                else
-                    producer.SendMessageAsync("inventory.order-item.process", orderLine.ToInventoryOrderlineProcess(orderMessage.OrderId)).GetAwaiter().GetResult();
-            }
-
-            // Send it
-            producer.SendMessageAsync("new-order.process", orderMessage).GetAwaiter().GetResult();
+            pm.HandleNewOrderAsync(dto, ct);
 
             return Ok();
         }

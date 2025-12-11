@@ -4,7 +4,7 @@ using Shared.Contracts.OrderBook;
 
 namespace Orchestrator.Utils.Enrichers;
 
-public static class OrderMapper
+public static class OrderEnricher
 {
     extension(OrderDto dto)
     {

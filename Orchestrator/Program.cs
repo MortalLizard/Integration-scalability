@@ -1,3 +1,5 @@
+using Orchestrator.OrderSaga;
+
 using Serilog;
 using Shared;
 using Shared.Infrastructure;
@@ -15,7 +17,8 @@ builder.Services.AddSerilog();
 builder.Services.AddRabbitInfrastructure();
 builder.Services.AddSingleton<Producer>();
 
-// Add services to the container.
+builder.Services.AddScoped<IOrderProcessManager, OrderProcessManager>();
+
 builder.Services.AddOpenApi();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
