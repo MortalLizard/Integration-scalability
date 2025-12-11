@@ -16,7 +16,7 @@ namespace Orchestrator.Gateway.Controllers
     public class BooksController : ControllerBase
     {
         [HttpPost("marketplace")]
-        public IActionResult NewMarketplaceBook([FromBody] JsonElement jsonElement, [FromServices] Producer producer)
+        public async Task<IActionResult> NewMarketplaceBook([FromBody] JsonElement jsonElement, [FromServices] Producer producer)
         {
             // Validation input using schema validation
             var errors = MarketplaceBookSchema.Instance.Validate(jsonElement);
@@ -36,13 +36,13 @@ namespace Orchestrator.Gateway.Controllers
             }
 
             // Send it
-            producer.SendMessageAsync("marketplace_books",dto.ToBookCreate()).GetAwaiter().GetResult();
+            await producer.SendMessageAsync("marketplace.create-book", dto.ToBookCreate());
 
             return Ok();
         }
 
         [HttpPost("neworder")]
-        public IActionResult NewOrder([FromBody] JsonElement jsonElement, [FromServices] IOrderProcessManager pm, CancellationToken ct)
+        public async Task<IActionResult> NewOrder([FromBody] JsonElement jsonElement, [FromServices] IOrderProcessManager pm, CancellationToken ct)
         {
             // validation input using schema validation
             var errors = OrderSchema.Instance.Validate(jsonElement);
@@ -60,7 +60,7 @@ namespace Orchestrator.Gateway.Controllers
                 return BadRequest(new { message = "Payload deserialized to null" });
             }
 
-            pm.HandleNewOrderAsync(dto, ct);
+            await pm.HandleNewOrderAsync(dto, ct);
 
             return Ok();
         }
