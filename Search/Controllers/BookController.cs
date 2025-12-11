@@ -66,8 +66,8 @@ public class BookController : ControllerBase
         var response = await _elastic.SearchAsync<Book>(s => s
             .Indices("books")
             .Query(q => q
-                .Match(m => m
-                    .Field(f => f.Title)
+                .MultiMatch(m => m
+                    .Fields(new[] { "title", "description" })
                     .Query(query)
                 )
             )
