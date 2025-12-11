@@ -1,40 +1,42 @@
-using RabbitMQ.Client;
 using System.Text;
+using System.Text.Json;
+using RabbitMQ.Client;
 using Serilog;
 
 namespace Shared;
 
-public class Producer
+public class Producer(IConnection connection)
 {
-    private readonly IConnection _connection;
-
-    public Producer(IConnection connection)
+    public async Task SendMessageAsync<T>(string queueName, T message)
     {
+        await using var channel = await connection.CreateChannelAsync();
 
-        _connection = connection;
-
-        Log.Information($"Producer started, attached to: localhost.");
-    }
-
-    public async Task SendMessageAsync(string queueName, string message)
-    {
-        await using var channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
-
-        channel.QueueDeclareAsync(
+        await channel.QueueDeclareAsync(
             queue: queueName,
             durable: false,
             exclusive: false,
             autoDelete: false,
-            arguments: null).GetAwaiter().GetResult();
+            arguments: null
+        );
 
-        byte[] body = Encoding.UTF8.GetBytes(message);
+        byte[] body;
+
+        if (message is string s)
+        {
+            body = Encoding.UTF8.GetBytes(s);
+        }
+        else
+        {
+            body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+        }
 
         await channel.BasicPublishAsync(
             exchange: "",
             routingKey: queueName,
             mandatory: false,
-            body: body);
+            body: body
+        );
 
-        Log.Information($"Message sent to queue: '{queueName}', with body: '{message}'");
+        Log.Information("Message sent to queue: '{QueueName}', with payload: {Payload}",queueName, body);
     }
 }
