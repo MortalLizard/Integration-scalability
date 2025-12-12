@@ -1,0 +1,21 @@
+services:
+
+  marketplace:
+    build:
+      args:
+        BUILD_CONFIGURATION: Debug
+
+  orchestrator:
+    build:
+      args:
+        BUILD_CONFIGURATION: Debug
+
+  search:
+    build:
+      args:
+        BUILD_CONFIGURATION: Debug
+
+  inventory:
+    build:
+      args:
+        BUILD_CONFIGURATION: Debug
