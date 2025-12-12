@@ -1,12 +1,10 @@
-using System.Text.Json;
 using Marketplace.Business.Interfaces;
-using Marketplace.Contracts.Commands;
-using Microsoft.Extensions.DependencyInjection;
 using Shared;
+using Shared.Contracts.CreateBook;
 
 namespace Marketplace.Consumers;
 
-public class CreateBookConsumer : BaseConsumer<CreateBook>
+public class CreateBookConsumer : BaseConsumer<MarketplaceBookCreate>
 {
     protected override string QueueName => "marketplace.create-book";
 
@@ -15,7 +13,7 @@ public class CreateBookConsumer : BaseConsumer<CreateBook>
     {
     }
 
-    protected override async Task HandleMessageAsync(CreateBook command, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    protected override async Task HandleMessageAsync(MarketplaceBookCreate command, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var createBookLogic = serviceProvider.GetRequiredService<ICreateBookLogic>();
         await createBookLogic.CreateBook(command, cancellationToken);

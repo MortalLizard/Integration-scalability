@@ -1,10 +1,10 @@
-using Inventory.Contracts.Commands;
 using Inventory.Logic;
 using Shared;
+using Shared.Contracts.OrderBook;
 
 namespace Inventory.Consumers;
 
-public class OrderItemConsumer : BaseConsumer<OrderItemProcess>
+public class OrderItemConsumer : BaseConsumer<InventoryOrderlineProcess>
 {
     protected override string QueueName => "inventory.order-item.process";
 
@@ -13,9 +13,9 @@ public class OrderItemConsumer : BaseConsumer<OrderItemProcess>
     {
     }
 
-    protected override async Task HandleMessageAsync(OrderItemProcess command, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    protected override async Task HandleMessageAsync(InventoryOrderlineProcess command, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        var orderItemLogic = serviceProvider.GetRequiredService<IOrderItemLogic>();
-        await orderItemLogic.ProcessOrderItem(command, cancellationToken);
+        var orderItemLogic = serviceProvider.GetRequiredService<IOrderlineLogic>();
+        await orderItemLogic.ProcessOrderline(command, cancellationToken);
     }
 }

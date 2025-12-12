@@ -15,6 +15,7 @@ public class Book
     public required DateTime PublishedDate { get; set; }
     public string? Description { get; set; }
     public required bool IsActive { get; set; }
+    public required Guid SellerId { get; set; }
     public required DateTime CreatedAt { get; set; }
     public required DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

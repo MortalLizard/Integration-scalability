@@ -1,8 +1,12 @@
 using System.Text.Json.Serialization;
 
-namespace Marketplace.Contracts.Commands;
+namespace Shared.Contracts.CreateBook;
 
-public sealed record CreateBook(
+public sealed record MarketplaceBookCreated(
+    [property: JsonPropertyName("id")]
+    [property: JsonRequired]
+    Guid Id,
+
     [property: JsonPropertyName("title")]
     [property: JsonRequired]
     string Title,
@@ -24,5 +28,8 @@ public sealed record CreateBook(
     DateTime PublishedDate,
 
     [property: JsonPropertyName("description")]
-    string? Description
+    string? Description,
+
+    [property: JsonPropertyName("seller_id")]
+    Guid? SellerId
 );

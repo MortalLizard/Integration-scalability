@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Shared.Contracts.CreateBook;
 
-public sealed record BookCreated(
+public sealed record MarketplaceBookCreate(
     [property: JsonPropertyName("id")]
     [property: JsonRequired]
     Guid Id,
@@ -28,5 +28,9 @@ public sealed record BookCreated(
     DateTime PublishedDate,
 
     [property: JsonPropertyName("description")]
-    string? Description
-): IBookEvent;
+    string? Description,
+
+    [property: JsonPropertyName("seller_id")]
+    [property: JsonRequired]
+    Guid SellerId
+);
