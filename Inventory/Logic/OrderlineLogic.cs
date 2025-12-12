@@ -1,7 +1,8 @@
 using System.Text.Json;
-using Inventory.Contracts.Commands;
-using Inventory.Contracts.Events;
 using Inventory.Database.Services;
+
+using Shared.Contracts.Mappers;
+using Shared.Contracts.OrderBook;
 
 namespace Inventory.Logic;
 
@@ -9,23 +10,18 @@ public class OrderlineLogic(IBookService bookService, Shared.Producer producer) 
 {
     private const string responseQueueName = "inventory.order-item.processed";
 
-    public async Task ProcessOrderItem(InventoryOrderlineProcess orderItemProcess, CancellationToken ct = default)
+    public async Task ProcessOrderline(InventoryOrderlineProcess orderlineProcess, CancellationToken ct = default)
     {
-        bool success = await bookService.UpdateStockAsync(orderItemProcess.BookId, orderItemProcess.Quantity, orderItemProcess.Price, ct);
+        bool success = await bookService.UpdateStockAsync(orderlineProcess.BookId, orderlineProcess.Quantity, orderlineProcess.Price, ct);
 
         if (!success)
         {
             throw new InvalidOperationException("Price mismatch or book not in stock.");
         }
 
-        var responsePayload = new OrderItemProcessed(
-            CorrelationId: orderItemProcess.CorrelationId,
-            BookId: orderItemProcess.BookId,
-            Quantity: orderItemProcess.Quantity,
-            Price: orderItemProcess.Price
-        );
+        var orderlineProcessed = orderlineProcess.ToInventoryOrderlineProcessed();
 
-        string jsonMessage = JsonSerializer.Serialize(responsePayload);
+        string jsonMessage = JsonSerializer.Serialize(orderlineProcessed);
 
         await producer.SendMessageAsync(responseQueueName, jsonMessage);
     }
