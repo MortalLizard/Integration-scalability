@@ -19,10 +19,6 @@ public class OrderlineLogic(IBookService bookService, Shared.Producer producer) 
             throw new InvalidOperationException("Price mismatch or book not in stock.");
         }
 
-        var orderlineProcessed = orderlineProcess.ToInventoryOrderlineProcessed();
-
-        string jsonMessage = JsonSerializer.Serialize(orderlineProcessed);
-
-        await producer.SendMessageAsync(responseQueueName, jsonMessage);
+        await producer.SendMessageAsync(responseQueueName, orderlineProcess.ToInventoryOrderlineProcessed());
     }
 }
