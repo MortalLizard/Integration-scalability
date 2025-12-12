@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Marketplace.Presentation.Controllers;
+namespace Marketplace.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
