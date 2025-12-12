@@ -50,7 +50,7 @@ namespace Orchestrator.Controllers
 
             var outboundJson = JsonSerializer.Serialize(dto);
             //send it
-            producer.SendMessageAsync("marketplace_books", outboundJson).GetAwaiter().GetResult();
+            producer.SendMessageAsync("marketplace.create-book", outboundJson).GetAwaiter().GetResult();
 
             return Ok();
         }
