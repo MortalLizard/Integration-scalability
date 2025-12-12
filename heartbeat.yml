@@ -1,0 +1,58 @@
+heartbeat.run_from:
+    id: dev-docker
+    geo:
+        name: "dev-docker"
+
+heartbeat.monitors:
+    - type: http
+      id: dev-apis
+      name: "Dev APIs"
+      enabled: true
+      schedule: '@every 10s'
+      urls:
+          - "http://orchestrator:8085/api/health"
+          - "http://marketplace:8080/api/health"
+          - "http://inventory:8081/api/health"
+          - "http://search:8083/api/health"
+      check.response:
+          status: 200
+      tags: ["dev", "apis"]
+
+    - type: http
+      id: elasticsearch-dev
+      name: "Elasticsearch (dev)"
+      enabled: true
+      schedule: '@every 15s'
+      urls: ["http://elasticsearch:9200/_cluster/health"]
+      check.response:
+          status: 200
+      tags: ["dev", "elasticsearch"]
+
+    - type: http
+      id: kibana-dev
+      name: "Kibana (dev)"
+      enabled: true
+      schedule: '@every 30s'
+      urls: ["http://kibana:5601/api/status"]
+      check.response:
+          status: 200
+      tags: ["dev", "kibana"]
+
+    - type: tcp
+      id: shared-db-dev
+      name: "Shared SQL Server (dev)"
+      enabled: true
+      schedule: '@every 10s'
+      hosts: ["shared-db:1433"]
+      tags: ["dev", "db", "sqlserver"]
+
+    - type: tcp
+      id: rabbitmq-dev
+      name: "RabbitMQ (dev)"
+      enabled: true
+      schedule: '@every 10s'
+      hosts: ["rabbitmq:5672"]
+      tags: ["dev", "rabbitmq"]
+
+output.elasticsearch:
+    hosts: ["http://elasticsearch:9200"]
