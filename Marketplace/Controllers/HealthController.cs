@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Search.Controllers
+namespace Marketplace.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -14,7 +14,7 @@ namespace Search.Controllers
             {
                 status = "Healthy",
                 timestamp = DateTime.UtcNow,
-                application = "Search",
+                application = "Marketplace",
                 version = "1.0.0"
             };
             return Ok(healthInfo);

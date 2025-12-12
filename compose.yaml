@@ -65,24 +65,6 @@
             - shared-db
             - rabbitmq
 
-    order:
-        build:
-            context: .
-            dockerfile: Order/Dockerfile
-        networks:
-            - default
-            - shared-marketplace-network
-        ports:
-            - "8084:8084"
-        environment:
-            - ConnectionStrings__Default=Server=shared-db;Database=OrderDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;
-            - Db__Schema=marketplace
-            - ASPNETCORE_URLS=http://+:8083
-            - ASPNETCORE_ENVIRONMENT=Development
-        depends_on:
-            - shared-db
-            - rabbitmq
-
     shared-db:
         image: mcr.microsoft.com/mssql/server:2019-latest
         container_name: shared-db
@@ -174,7 +156,6 @@
         networks:
             - default
         restart: unless-stopped
-
 
 volumes:
     shared_sql_data:

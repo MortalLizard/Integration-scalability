@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Search.Controllers
+namespace Inventory.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
