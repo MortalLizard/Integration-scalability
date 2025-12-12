@@ -1,5 +1,5 @@
 using Elastic.Clients.Elasticsearch;
-
+using Search.Consumers;
 using Search.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +12,9 @@ builder.Services.AddControllers();
 //ELasticsearch client
 builder.Services.AddElasticsearch();
 builder.Services.AddScoped<BookSearchSeeder>();
+
+// Hosted Services
+builder.Services.AddHostedService<CreatedMarketBookConsumer>();
 
 var app = builder.Build();
 

@@ -29,4 +29,4 @@ public sealed record BookCreated(
 
     [property: JsonPropertyName("description")]
     string? Description
-);
+): IBookEvent;
