@@ -80,7 +80,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Database\Migrations\" />
       <Folder Include="obj\Debug\net10.0\" />
     </ItemGroup>
 
