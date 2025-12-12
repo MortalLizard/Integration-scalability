@@ -7,15 +7,6 @@ namespace Orchestrator.OrderSaga.Database.Repository;
 
 public sealed class OrderSagaRepository(OrderDbContext dbContext) : IOrderSagaRepository
 {
-    public async Task<OrderSagaState?> GetAsync(
-        Guid orderId,
-        CancellationToken ct = default)
-    {
-        return await dbContext.OrderSagas
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.OrderId == orderId, ct);
-    }
-
     public async Task SaveAsync(
         OrderSagaState state,
         CancellationToken ct = default)
