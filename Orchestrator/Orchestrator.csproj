@@ -38,6 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="OrderSaga\Consumers\" />
       <Folder Include="OrderSaga\Utils\" />
     </ItemGroup>
 

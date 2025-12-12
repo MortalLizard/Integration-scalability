@@ -10,6 +10,7 @@ public static class MarketplaceOrderlineProcessMapper
         {
             return new MarketplaceOrderlineProcessed(
                 CorrelationId: process.CorrelationId,
+                LineId: process.LineId,
                 BookId: process.BookId,
                 Price: process.Price
             );
@@ -19,6 +20,7 @@ public static class MarketplaceOrderlineProcessMapper
         {
             return new MarketplaceOrderlineProcessFailed(
                 CorrelationId: process.CorrelationId,
+                LineId: process.LineId,
                 BookId: process.BookId,
                 Price: process.Price
             );

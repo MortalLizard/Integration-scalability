@@ -8,7 +8,8 @@ public enum OrderSagaStatus
     PaymentAndReserve = 3,
     InvoiceShipSearch = 4,
     Completed = 5,
-    Failed = 6
+    Compensating = 6,
+    Failed = 7
 }
 
 public sealed class OrderSagaState
@@ -17,7 +18,7 @@ public sealed class OrderSagaState
 
     public string BuyerEmail { get; set; } = null!;
 
-    // line-processing phase
+
     public int LinesExpected { get; set; }
     public int LinesCompleted { get; set; }
     public int LinesFailed { get; set; }

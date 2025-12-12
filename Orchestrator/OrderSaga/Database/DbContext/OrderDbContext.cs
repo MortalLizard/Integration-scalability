@@ -11,6 +11,7 @@ public sealed class OrderDbContext : Microsoft.EntityFrameworkCore.DbContext
     }
 
     public DbSet<OrderSagaState> OrderSagas => Set<OrderSagaState>();
+    public DbSet<OrderSagaLine> OrderSagaLines => Set<OrderSagaLine>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,7 +40,20 @@ public sealed class OrderDbContext : Microsoft.EntityFrameworkCore.DbContext
 
             e.Property(x => x.UpdatedAt)
                 .HasColumnType("datetime2");
+        });
 
+        modelBuilder.Entity<OrderSagaLine>(e =>
+        {
+            e.ToTable("OrderSagaLines");
+
+            e.HasKey(x => x.Id);
+
+            e.HasIndex(x => new { x.OrderId, x.LineId }).IsUnique();
+
+            e.Property(x => x.Price).HasPrecision(18, 2);
+
+            e.Property(x => x.CreatedAt).HasColumnType("datetime2");
+            e.Property(x => x.UpdatedAt).HasColumnType("datetime2");
         });
     }
 }

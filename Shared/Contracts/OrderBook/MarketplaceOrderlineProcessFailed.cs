@@ -11,6 +11,10 @@ public sealed record MarketplaceOrderlineProcessFailed(
     [property: JsonRequired]
     Guid CorrelationId,
 
+    [property: JsonPropertyName("line_id")]
+    [property: JsonRequired]
+    Guid LineId,
+
     [property: JsonPropertyName("price")]
     [property: JsonRequired]
     decimal Price

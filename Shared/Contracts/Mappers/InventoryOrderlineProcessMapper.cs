@@ -10,6 +10,7 @@ public static class InventoryOrderlineProcessMapper
         {
             return new InventoryOrderlineProcessed(
                 CorrelationId: process.CorrelationId,
+                LineId: process.LineId,
                 BookId: process.BookId,
                 Quantity: process.Quantity,
                 Price: process.Price
@@ -20,6 +21,7 @@ public static class InventoryOrderlineProcessMapper
         {
             return new InventoryOrderlineProcessFailed(
                 CorrelationId: process.CorrelationId,
+                LineId: process.LineId,
                 BookId: process.BookId,
                 Quantity: process.Quantity,
                 Price: process.Price
