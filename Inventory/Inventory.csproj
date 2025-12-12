@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -34,7 +34,6 @@
     <ItemGroup>
       <Folder Include="Contracts\Dtos\" />
       <Folder Include="Database\Migrations\" />
-      <Folder Include="Test\" />
       <Folder Include="obj\Debug\net10.0\" />
     </ItemGroup>
 
