@@ -18,6 +18,9 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Services.AddSerilog();
 
+// Add controllers
+builder.Services.AddControllers();
+
 // Add services to the container.
 builder.Services.AddOpenApi();
 
@@ -74,7 +77,7 @@ using (var scope = app.Services.CreateScope())
         throw;
     }
 }
-
+app.MapControllers();
 app.UseHttpsRedirection();
 
 app.Run();
