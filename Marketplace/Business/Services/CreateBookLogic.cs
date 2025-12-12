@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Marketplace.Business.Interfaces;
+﻿using Marketplace.Business.Interfaces;
 using Marketplace.Database.Repositories;
 using Marketplace.Mappers;
 using Serilog;
