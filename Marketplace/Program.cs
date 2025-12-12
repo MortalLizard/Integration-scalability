@@ -18,6 +18,9 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Services.AddSerilog();
 
+// Add controllers
+builder.Services.AddControllers();
+
 // Add services to the container.
 builder.Services.AddOpenApi();
 
