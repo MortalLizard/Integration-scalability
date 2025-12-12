@@ -1,29 +1,30 @@
-using Marketplace.Contracts.Commands;
 using Marketplace.Database.Entities;
+using Shared.Contracts.CreateBook;
 
 namespace Marketplace.Mappers;
 
 public static class CreateBookMapper
 {
-    /// <summary>
-    /// Maps a CreateBook command into a new Book entity.
-    /// </summary>
-    public static Book ToEntity(this CreateBook createBook)
+    extension(MarketplaceBookCreate createMarketplaceBook)
     {
-        var now = DateTime.UtcNow;
-
-        return new Book
+        public Book ToEntity()
         {
-            Id = Guid.NewGuid(),
-            Title = createBook.Title,
-            Author = createBook.Author,
-            Isbn = createBook.Isbn,
-            Price = createBook.Price,
-            PublishedDate = createBook.PublishedDate,
-            Description = createBook.Description,
-            IsActive = true,
-            CreatedAt = now,
-            UpdatedAt = now
-        };
+            var now = DateTime.UtcNow;
+
+            return new Book
+            {
+                Id = createMarketplaceBook.Id,
+                Title = createMarketplaceBook.Title,
+                Author = createMarketplaceBook.Author,
+                Isbn = createMarketplaceBook.Isbn,
+                Price = createMarketplaceBook.Price,
+                PublishedDate = createMarketplaceBook.PublishedDate,
+                Description = createMarketplaceBook.Description,
+                IsActive = true,
+                SellerId = createMarketplaceBook.SellerId,
+                CreatedAt = now,
+                UpdatedAt = now
+            };
+        }
     }
 }

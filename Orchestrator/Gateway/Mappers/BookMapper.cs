@@ -8,11 +8,12 @@ public static class BookMapper
 {
     extension(MarketplaceBookDto dto)
     {
-        public BookCreate ToBookCreate()
+        public MarketplaceBookCreate ToBookCreate()
         {
             ArgumentNullException.ThrowIfNull(dto);
 
-            return new BookCreate(
+            return new MarketplaceBookCreate(
+                Id: Guid.NewGuid(),
                 Title: dto.Title,
                 Author: dto.Author,
                 Isbn: dto.Isbn,

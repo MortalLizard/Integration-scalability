@@ -47,12 +47,12 @@ builder.Services.AddSingleton<Producer>();
 builder.Services.AddTransient<IConsumer, Consumer>();
 
 // Add consumer as hosted services
-builder.Services.AddHostedService<OrderItemConsumer>();
+builder.Services.AddHostedService<OrderlineConsumer>();
 builder.Services.AddHostedService<CreateBookConsumer>();
 
 // Add services for dependency injection
 builder.Services.AddScoped<ICreateBookLogic, CreateBookLogic>();
-builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
+builder.Services.AddScoped<IOrderlineLogic, OrderlineLogic>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 
 var app = builder.Build();

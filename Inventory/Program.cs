@@ -47,7 +47,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHostedService<OrderItemConsumer>();
 
 // Register inventory logicBookRepository
-builder.Services.AddScoped<IOrderItemLogic, OrderItemLogic>();
+builder.Services.AddScoped<IOrderlineLogic, OrderlineLogic>();
 builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();

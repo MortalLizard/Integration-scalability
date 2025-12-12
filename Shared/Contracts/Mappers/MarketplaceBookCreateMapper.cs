@@ -1,22 +1,22 @@
 using Shared.Contracts.CreateBook;
-using Shared.Contracts.OrderBook;
 
 namespace Shared.Contracts.Mappers;
 
-public static class BookCreateMapper
+public static class MarketplaceBookCreateMapper
 {
-    extension(BookCreate create)
+    extension(MarketplaceBookCreate create)
     {
-        public BookCreated ToBookCreated()
+        public MarketplaceBookCreated ToBookCreated()
         {
-            return new BookCreated(
-                Id: Guid.NewGuid(),
+            return new MarketplaceBookCreated(
+                Id: create.Id,
                 Title: create.Title,
                 Author: create.Author,
                 Isbn: create.Isbn,
                 Price: create.Price,
                 PublishedDate: create.PublishedDate,
-                Description: create.Description
+                Description: create.Description,
+                SellerId: create.SellerId
             );
         }
     }

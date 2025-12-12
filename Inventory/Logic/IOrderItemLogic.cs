@@ -1,9 +1,0 @@
-using Inventory.Contracts.Commands;
-
-namespace Inventory.Logic;
-
-public interface IOrderItemLogic
-{
-    public Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default);
-
-}

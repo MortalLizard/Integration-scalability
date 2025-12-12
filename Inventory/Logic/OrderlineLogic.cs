@@ -5,11 +5,11 @@ using Inventory.Database.Services;
 
 namespace Inventory.Logic;
 
-public class OrderItemLogic(IBookService bookService, Shared.Producer producer) : IOrderItemLogic
+public class OrderlineLogic(IBookService bookService, Shared.Producer producer) : IOrderlineLogic
 {
     private const string responseQueueName = "inventory.order-item.processed";
 
-    public async Task ProcessOrderItem(OrderItemProcess orderItemProcess, CancellationToken ct = default)
+    public async Task ProcessOrderItem(InventoryOrderlineProcess orderItemProcess, CancellationToken ct = default)
     {
         bool success = await bookService.UpdateStockAsync(orderItemProcess.BookId, orderItemProcess.Quantity, orderItemProcess.Price, ct);
 
