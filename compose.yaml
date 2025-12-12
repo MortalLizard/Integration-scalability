@@ -17,19 +17,22 @@
             - shared-db
             - rabbitmq
 
-    gateway:
+    orchestrator:
         build:
             context: .
-            dockerfile: Gateway/Dockerfile
+            dockerfile: Orchestrator/Dockerfile
         networks:
             - default
         ports:
             - "8085:8085"
         environment:
+            - ConnectionStrings__Default=Server=shared-db;Database=OrderDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;
+            - Db__Schema=order
             - ASPNETCORE_URLS=http://+:8085
             - ASPNETCORE_ENVIRONMENT=Development
         depends_on:
             - rabbitmq
+
     search:
         build:
             context: .
@@ -156,6 +159,7 @@
         networks:
             - default
         restart: unless-stopped
+
 
 volumes:
     shared_sql_data:
