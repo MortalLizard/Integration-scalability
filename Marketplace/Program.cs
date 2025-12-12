@@ -74,7 +74,7 @@ using (var scope = app.Services.CreateScope())
         throw;
     }
 }
-
+app.MapControllers();
 app.UseHttpsRedirection();
 
 app.Run();
