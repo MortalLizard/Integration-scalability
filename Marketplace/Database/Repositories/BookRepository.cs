@@ -42,4 +42,13 @@ public class BookRepository(MarketplaceDbContext dbContext) : IBookRepository
 
         return affected == 1;
     }
+
+    public async Task<bool> RevertIsActiveAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        int affected = await dbContext.Books
+            .Where(b => b.Id == id && !b.IsActive)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(b => b.IsActive, b => true), cancellationToken);
+
+        return affected == 1;
+    }
 }

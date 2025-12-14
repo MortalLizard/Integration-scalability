@@ -10,6 +10,7 @@ public interface IBookService
     Task<bool> UpdateAsync(Book book);
     Task<bool> DeleteAsync(Guid id);
 
-
     Task<bool> UpdateStockAsync(Guid id, int quantityChange, decimal expectedPrice, CancellationToken ct = default);
+
+    Task<bool> ReleaseStockAsync(Guid id, int quantityToRelease, CancellationToken ct = default);
 }

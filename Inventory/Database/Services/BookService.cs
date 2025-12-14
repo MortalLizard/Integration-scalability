@@ -63,6 +63,17 @@ public class BookService(InventoryDbContext context, Producer producer) : IBookS
         return rows == 1;
     }
 
+    public async Task<bool> ReleaseStockAsync(Guid id, int quantityToRelease, CancellationToken ct = default)
+    {
+        int rows = await context.Books
+            .Where(b => b.Id == id)
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(b => b.Quantity, b => b.Quantity + quantityToRelease),
+                cancellationToken: ct);
+
+        return rows == 1;
+    }
+
     public async Task<bool> DeleteAsync(Guid id)
     {
         int rows = await context.Database.ExecuteSqlInterpolatedAsync($@"

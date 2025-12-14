@@ -17,4 +17,9 @@ public interface IBookRepository
     /// Updates the IsActive flag of a book by its identifier.
     /// </summary>
     Task<bool> UpdateIsActiveAsync(Guid id, decimal expectedPrice, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Revert the IsActive flag of a book by its identifier.
+    /// </summary>
+    Task<bool> RevertIsActiveAsync(Guid id, CancellationToken cancellationToken = default);
 }

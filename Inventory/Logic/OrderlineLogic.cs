@@ -21,4 +21,9 @@ public class OrderlineLogic(IBookService bookService, Shared.Producer producer) 
 
         await producer.SendMessageAsync(responseQueueName, orderlineProcess.ToInventoryOrderlineProcessed());
     }
+
+    public async Task ReleaseStockAsync(Guid bookId, int quantity, CancellationToken ct)
+    {
+        await bookService.ReleaseStockAsync(bookId, quantity, ct);
+    }
 }

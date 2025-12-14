@@ -22,4 +22,9 @@ public class OrderlineLogic(IBookRepository bookRepository, Shared.Producer prod
 
         await producer.SendMessageAsync(responseQueueName, orderlineProcess.ToMarketplaceOrderlineProcessed());
     }
+
+    public async Task RevertIsActiveAsync(Guid bookId, CancellationToken ct)
+    {
+        await bookRepository.RevertIsActiveAsync(bookId, ct);
+    }
 }
