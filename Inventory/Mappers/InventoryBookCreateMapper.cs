@@ -8,7 +8,7 @@ public static class InventoryBookCreateMapper
 {
     extension(Book book)
     {
-        public InventoryBookCreated ToBookCreated()
+        public InventoryBookCreated ToInventoryBookCreated()
         {
             return new InventoryBookCreated(
                 Id: book.Id,

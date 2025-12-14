@@ -80,12 +80,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Database\Migrations\" />
       <Folder Include="obj\Debug\net10.0\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Inventory\Inventory.csproj" />
       <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 

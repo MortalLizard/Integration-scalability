@@ -31,7 +31,7 @@ public class Book
     public required string Description { get; set; }
 
     [Required]
-    public required DateOnly PublishedDate { get; set; }
+    public required DateTime PublishedDate { get; set; }
 
     [Required]
     [Range(typeof(int), "0", "1000000")]

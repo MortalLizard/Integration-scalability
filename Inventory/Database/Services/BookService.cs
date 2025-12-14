@@ -1,13 +1,16 @@
 using System.Data;
 
 using Inventory.Database.Entities;
+using Inventory.Mappers;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
+using Shared;
+
 namespace Inventory.Database.Services;
 
-public class BookService(InventoryDbContext context) : IBookService
+public class BookService(InventoryDbContext context, Producer producer) : IBookService
 {
     public async Task<List<Book>> GetAllAsync()
     {
@@ -26,6 +29,8 @@ public class BookService(InventoryDbContext context) : IBookService
 
         context.Books.Add(book);
         await context.SaveChangesAsync();
+
+        await producer.SendMessageAsync("inventory.book-created",  book.ToInventoryBookCreated());
     }
 
     public async Task<bool> UpdateAsync(Book book)

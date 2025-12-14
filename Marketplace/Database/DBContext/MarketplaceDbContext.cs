@@ -44,6 +44,9 @@ public class MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options
 
             entity.Property(b => b.IsActive)
                 .IsRequired();
+
+            entity.Property(b => b.SellerId)
+                .IsRequired();
         });
     }
 }
