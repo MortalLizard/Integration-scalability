@@ -3,13 +3,11 @@ namespace Orchestrator.OrderSaga.Database.Entities;
 public enum OrderSagaStatus
 {
     NewOrderReceived = 0,
-    LinesDispatched = 1,
-    WaitingForLineResults = 2,
-    PaymentAndReserve = 3,
-    InvoiceShipSearch = 4,
-    Completed = 5,
-    Compensating = 6,
-    Failed = 7
+    PaymentAndReserve = 1,
+    InvoiceShipSearch = 2,
+    Completed = 3,
+    Compensating = 4,
+    Failed = 5
 }
 
 public sealed class OrderSagaState
@@ -17,7 +15,6 @@ public sealed class OrderSagaState
     public Guid OrderId { get; set; }
 
     public string BuyerEmail { get; set; } = null!;
-
 
     public int LinesExpected { get; set; }
     public int LinesCompleted { get; set; }

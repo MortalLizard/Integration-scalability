@@ -16,7 +16,7 @@ public static class OrderToSagaStateMapper
                 LinesExpected = dto.Items.Count,
                 LinesCompleted = 0,
                 LinesFailed = 0,
-                Status = OrderSagaStatus.NewOrderReceived,
+                Status = OrderSagaStatus.PaymentAndReserve,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

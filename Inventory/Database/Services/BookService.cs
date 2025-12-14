@@ -54,7 +54,7 @@ public class BookService(InventoryDbContext context, Producer producer) : IBookS
 
     public async Task<bool> UpdateStockAsync(Guid id, int quantityChange, decimal expectedPrice, CancellationToken ct = default)
     {
-        var rows = await context.Books
+        int rows = await context.Books
             .Where(b => b.Id == id && b.Price == expectedPrice && b.Quantity >= quantityChange)
             .ExecuteUpdateAsync(setters => setters
                     .SetProperty(b => b.Quantity, b => b.Quantity - quantityChange),

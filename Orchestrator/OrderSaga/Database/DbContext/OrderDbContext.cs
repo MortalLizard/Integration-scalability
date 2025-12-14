@@ -50,6 +50,11 @@ public sealed class OrderDbContext : Microsoft.EntityFrameworkCore.DbContext
 
             e.HasIndex(x => new { x.OrderId, x.LineId }).IsUnique();
 
+            e.Property(x => x.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
+
             e.Property(x => x.Price).HasPrecision(18, 2);
 
             e.Property(x => x.CreatedAt).HasColumnType("datetime2");
