@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-
 using Orchestrator.OrderSaga;
+using Orchestrator.OrderSaga.Consumers;
 using Orchestrator.OrderSaga.Database.DbContext;
 using Orchestrator.OrderSaga.Database.Repository;
 using Serilog;
@@ -36,10 +36,22 @@ builder.Services.AddDbContextPool<OrderDbContext>(options =>
 //create rabbitmq connection singleton and producer service
 builder.Services.AddRabbitInfrastructure();
 builder.Services.AddSingleton<Producer>();
-builder.Services.AddTransient<Consumer>();
+builder.Services.AddTransient<IConsumer, Consumer>();
 
+// Services used in OrderSaga
 builder.Services.AddScoped<IOrderProcessManager, OrderProcessManager>();
 builder.Services.AddScoped<IOrderSagaRepository, OrderSagaRepository>();
+builder.Services.AddHostedService<InventoryOrderlineProcessedConsumer>();
+builder.Services.AddHostedService<InventoryOrderlineProcessFailedConsumer>();
+builder.Services.AddHostedService<MarketplaceOrderlineProcessedConsumer>();
+builder.Services.AddHostedService<MarketplaceOrderlineProcessFailedConsumer>();
+builder.Services.AddHostedService<ShippingCompletedConsumer>();
+builder.Services.AddHostedService<ShippingFailedConsumer>();
+builder.Services.AddHostedService<BillingInvoicedConsumer>();
+builder.Services.AddHostedService<BillingInvoiceFailedConsumer>();
+builder.Services.AddHostedService<BillingAuthorizedConsumer>();
+builder.Services.AddHostedService<BillingAuthorizationFailedConsumer>();
+
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers().AddJsonOptions(options =>

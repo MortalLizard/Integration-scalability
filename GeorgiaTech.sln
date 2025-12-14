@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchestrator", "Orchestrator\Orchestrator.csproj", "{8C0E9796-59A2-4508-8DE1-167D5A5695DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing", "Billing\Billing.csproj", "{FEB88AB0-EDCD-4235-AC49-57ECE43F62DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shipping", "Shipping\Shipping.csproj", "{132EC29E-59F3-4163-9182-890101D1F722}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +51,14 @@ Global
 		{8C0E9796-59A2-4508-8DE1-167D5A5695DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C0E9796-59A2-4508-8DE1-167D5A5695DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C0E9796-59A2-4508-8DE1-167D5A5695DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEB88AB0-EDCD-4235-AC49-57ECE43F62DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEB88AB0-EDCD-4235-AC49-57ECE43F62DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEB88AB0-EDCD-4235-AC49-57ECE43F62DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEB88AB0-EDCD-4235-AC49-57ECE43F62DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132EC29E-59F3-4163-9182-890101D1F722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132EC29E-59F3-4163-9182-890101D1F722}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132EC29E-59F3-4163-9182-890101D1F722}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132EC29E-59F3-4163-9182-890101D1F722}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

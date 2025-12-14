@@ -68,6 +68,38 @@
             - shared-db
             - rabbitmq
 
+    billing:
+        image: billing
+        build:
+            context: .
+            dockerfile: Billing/Dockerfile
+        networks:
+            - default
+        ports:
+            - "8082:8082"
+        environment:
+            - ASPNETCORE_URLS=http://+:8082
+            - ASPNETCORE_ENVIRONMENT=Development
+        depends_on:
+            - shared-db
+            - rabbitmq
+
+    shipping:
+        image: shipping
+        build:
+            context: .
+            dockerfile: Shipping/Dockerfile
+        networks:
+            - default
+        ports:
+            - "8084:8084"
+        environment:
+            - ASPNETCORE_URLS=http://+:8084
+            - ASPNETCORE_ENVIRONMENT=Development
+        depends_on:
+            - shared-db
+            - rabbitmq
+
     shared-db:
         image: mcr.microsoft.com/mssql/server:2019-latest
         container_name: shared-db
@@ -173,3 +205,4 @@ networks:
     shared-inventory-network:
     search-network:
     default:
+

@@ -5,7 +5,6 @@ using Marketplace.Database.Repositories;
 using Marketplace.Database.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-
 using Shared;
 using Shared.Infrastructure;
 

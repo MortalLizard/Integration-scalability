@@ -7,6 +7,7 @@ namespace Inventory.Logic;
 public class OrderlineLogic(IBookService bookService, Shared.Producer producer) : IOrderlineLogic
 {
     private const string responseQueueName = "inventory.order-item.processed";
+    private const string failedQueueName = "inventory.order-item.process.failed";
 
     public async Task ProcessOrderline(InventoryOrderlineProcess orderlineProcess, CancellationToken ct = default)
     {
@@ -14,7 +15,8 @@ public class OrderlineLogic(IBookService bookService, Shared.Producer producer) 
 
         if (!success)
         {
-            throw new InvalidOperationException("Price mismatch or book not in stock.");
+            await producer.SendMessageAsync(failedQueueName, orderlineProcess.ToInventoryOrderlineProcessFailed());
+            return;
         }
 
         await producer.SendMessageAsync(responseQueueName, orderlineProcess.ToInventoryOrderlineProcessed());
