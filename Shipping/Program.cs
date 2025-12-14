@@ -25,7 +25,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/health", () =>
+app.MapGet("/api/health", () =>
     {
         var healthInfo = new HealthInfo(
             Status: "Healthy",
