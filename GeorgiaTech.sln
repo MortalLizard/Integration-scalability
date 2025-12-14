@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		compose.yaml = compose.yaml
 		compose.debug.yaml = compose.debug.yaml
 		filebeat.yml = filebeat.yml
+		heartbeat.yml = heartbeat.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace", "Marketplace\Marketplace.csproj", "{E236EE1C-5CC2-4B9A-BDB6-984852963A03}"

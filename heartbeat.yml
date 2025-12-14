@@ -14,6 +14,8 @@ heartbeat.monitors:
           - "http://marketplace:8080/api/health"
           - "http://inventory:8081/api/health"
           - "http://search:8083/api/health"
+          - "http://billing:8082/api/health"
+          - "http://shipping:8084/api/health"
       check.response:
           status: 200
       tags: ["dev", "apis"]
