@@ -8,15 +8,13 @@ public abstract class BaseConsumer<TCommand> : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IConsumer _consumer;
-    private readonly string _queueName;
+    
+    public abstract string QueueName { get; }
 
-    protected string QueueName => _queueName;
-
-    protected BaseConsumer(IServiceScopeFactory serviceScopeFactory, IConsumer consumer, string queueName)
+    protected BaseConsumer(IServiceScopeFactory serviceScopeFactory, IConsumer consumer)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _consumer = consumer;
-        _queueName = queueName;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
