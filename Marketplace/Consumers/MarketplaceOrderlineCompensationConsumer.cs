@@ -7,7 +7,7 @@ namespace Marketplace.Consumers;
 
 public sealed class MarketplaceOrderlineCompensateConsumer : BaseConsumer<MarketplaceOrderlineCompensate>
 {
-    protected override string QueueName => "marketplace.revert.request";
+    protected override string QueueName => "marketplace.order-item.compensate";
 
     public MarketplaceOrderlineCompensateConsumer(IServiceScopeFactory serviceScopeFactory, IConsumer consumer)
         : base(serviceScopeFactory, consumer)

@@ -39,6 +39,7 @@
 
     <ItemGroup>
       <Folder Include="OrderSaga\Consumers\" />
+      <Folder Include="OrderSaga\Database\Migrations\" />
       <Folder Include="OrderSaga\Utils\" />
     </ItemGroup>
 

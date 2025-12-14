@@ -45,6 +45,7 @@ builder.Services.AddControllersWithViews();
 
 // Register consumer as a hosted service
 builder.Services.AddHostedService<OrderItemConsumer>();
+builder.Services.AddHostedService<InventoryOrderlineCompensateConsumer>();
 
 // Register inventory logicBookRepository
 builder.Services.AddScoped<IOrderlineLogic, OrderlineLogic>();

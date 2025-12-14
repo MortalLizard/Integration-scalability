@@ -13,27 +13,20 @@ public sealed class BillingInvoiceConsumer : BaseConsumer<BillingInvoiceRequest>
     {
     }
 
-    protected override async Task HandleMessageAsync(
-        BillingInvoiceRequest command,
-        IServiceProvider serviceProvider,
-        CancellationToken cancellationToken)
+    protected override async Task HandleMessageAsync(BillingInvoiceRequest command, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(120), cancellationToken);
+        await Task.Delay(TimeSpan.FromMilliseconds(60), cancellationToken);
 
         var success = true;
         var producer = serviceProvider.GetRequiredService<Producer>();
 
         if (success)
         {
-            Log.Information("Billing invoice stub succeeded. OrderId={OrderId}", command.CorrelationId);
             await producer.SendMessageAsync("billing.invoiced", new BillingInvoiced(command.CorrelationId));
         }
         else
         {
-            Log.Warning("Billing invoice stub failed. OrderId={OrderId}", command.CorrelationId);
-            await producer.SendMessageAsync(
-                "billing.invoice.failed",
-                new BillingInvoiceFailed(command.CorrelationId, "Invoice failed (stub)")
+            await producer.SendMessageAsync("billing.invoice.failed", new BillingInvoiceFailed(command.CorrelationId, "Invoice failed (stub)")
             );
         }
     }

@@ -13,27 +13,20 @@ public sealed class BillingAuthorizeConsumer : BaseConsumer<BillingAuthorizeRequ
     {
     }
 
-    protected override async Task HandleMessageAsync(
-        BillingAuthorizeRequest command,
-        IServiceProvider serviceProvider,
-        CancellationToken cancellationToken)
+    protected override async Task HandleMessageAsync(BillingAuthorizeRequest command, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(150), cancellationToken);
+        await Task.Delay(TimeSpan.FromMilliseconds(60), cancellationToken);
 
-        var success = true; // flip to simulate decline
+        var success = true;
         var producer = serviceProvider.GetRequiredService<Producer>();
 
         if (success)
         {
-            Log.Information("Billing authorize stub succeeded. OrderId={OrderId}", command.CorrelationId);
             await producer.SendMessageAsync("billing.authorized", new BillingAuthorized(command.CorrelationId));
         }
         else
         {
-            Log.Warning("Billing authorize stub failed. OrderId={OrderId}", command.CorrelationId);
-            await producer.SendMessageAsync(
-                "billing.authorization.failed",
-                new BillingAuthorizationFailed(command.CorrelationId, "Authorization failed (stub)")
+            await producer.SendMessageAsync("billing.authorization.failed", new BillingAuthorizationFailed(command.CorrelationId, "Authorization failed (stub)")
             );
         }
     }

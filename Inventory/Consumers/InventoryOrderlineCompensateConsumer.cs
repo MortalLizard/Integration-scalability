@@ -9,7 +9,7 @@ namespace Inventory.Consumers;
 
 public sealed class InventoryOrderlineCompensateConsumer : BaseConsumer<InventoryOrderlineCompensate>
 {
-    protected override string QueueName => "inventory.release.request";
+    protected override string QueueName => "inventory.order-item.compensate";
 
     public InventoryOrderlineCompensateConsumer(IServiceScopeFactory serviceScopeFactory, IConsumer consumer)
         : base(serviceScopeFactory, consumer)

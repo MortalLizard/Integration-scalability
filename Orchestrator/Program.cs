@@ -18,7 +18,7 @@ builder.Services.AddSerilog();
 
 // Setup db
 string connectionString = builder.Configuration.GetConnectionString("Default")
-                          ?? "Server=shared-db;Database=OrderDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;";
+                          ?? "Server=localhost,14333;Database=OrderDb;User Id=sa;Password=Shared@123!;TrustServerCertificate=True;";
 
 builder.Services.AddDbContextPool<OrderDbContext>(options =>
     options.UseSqlServer(
@@ -51,7 +51,6 @@ builder.Services.AddHostedService<BillingInvoicedConsumer>();
 builder.Services.AddHostedService<BillingInvoiceFailedConsumer>();
 builder.Services.AddHostedService<BillingAuthorizedConsumer>();
 builder.Services.AddHostedService<BillingAuthorizationFailedConsumer>();
-
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers().AddJsonOptions(options =>

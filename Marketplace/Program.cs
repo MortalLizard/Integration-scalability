@@ -48,6 +48,7 @@ builder.Services.AddTransient<IConsumer, Consumer>();
 // Add consumer as hosted services
 builder.Services.AddHostedService<OrderlineConsumer>();
 builder.Services.AddHostedService<CreateBookConsumer>();
+builder.Services.AddHostedService<MarketplaceOrderlineCompensateConsumer>();
 
 // Add services for dependency injection
 builder.Services.AddScoped<ICreateBookLogic, CreateBookLogic>();

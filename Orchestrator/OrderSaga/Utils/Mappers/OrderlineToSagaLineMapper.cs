@@ -7,14 +7,14 @@ public static class OrderlineToSagaLineMapper
 {
     extension(OrderlineDto dto)
     {
-        public OrderSagaLine ToSagaLine(Guid orderId, Guid lineId)
+        public OrderSagaLine ToSagaLine(Guid orderId)
         {
             ArgumentNullException.ThrowIfNull(dto);
 
             return new OrderSagaLine
             {
                 OrderId = orderId,
-                LineId = lineId,
+                LineId = Guid.NewGuid(),
                 Marketplace = dto.Marketplace,
                 BookId = dto.BookId,
                 Quantity = dto.Quantity,

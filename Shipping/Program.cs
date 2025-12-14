@@ -8,8 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddOpenApi();
 
-var app = builder.Build();
-
 //create rabbitmq connection singleton and producer service
 builder.Services.AddRabbitInfrastructure();
 builder.Services.AddSingleton<Producer>();
@@ -17,6 +15,8 @@ builder.Services.AddTransient<IConsumer, Consumer>();
 
 // Add consumer as hosted services
 builder.Services.AddHostedService<ShippingRequestConsumer>();
+
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {

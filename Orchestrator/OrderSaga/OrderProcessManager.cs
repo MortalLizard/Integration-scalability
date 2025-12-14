@@ -1,7 +1,6 @@
 using Orchestrator.Gateway.DTOs;
 using Orchestrator.OrderSaga.Database.Entities;
 using Orchestrator.OrderSaga.Database.Repository;
-using Orchestrator.OrderSaga.Utils.Enrichers;
 using Orchestrator.OrderSaga.Utils.Mappers;
 using Serilog;
 using Shared;
@@ -23,24 +22,17 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
         Log.Information("Order saga started. OrderId={OrderId}, BuyerEmail={BuyerEmail}, Items={ItemCount}",
             saga.OrderId, saga.BuyerEmail, saga.LinesExpected);
 
-        // Generate stable lineIds once and reuse for DB + outgoing messages
-        var toDispatch = dto.Items
-            .Select(orderLine => new { Line = orderLine, LineId = Guid.NewGuid() })
-            .ToList();
-
-        // Persist all saga lines in one batch
-        var sagaLines = toDispatch
-            .Select(x => x.Line.ToSagaLine(saga.OrderId, x.LineId))
+        var sagaLines = dto.Items
+            .Select(orderLine => orderLine.ToSagaLine(saga.OrderId))
             .ToList();
 
         await sagaRepository.AddLinesAsync(sagaLines, ct);
 
-        // Dispatch ALL line reservations
-        foreach (var x in toDispatch)
+        foreach (var line in sagaLines)
         {
-            if (x.Line.Marketplace)
+            if (line.Marketplace)
             {
-                var msg = x.Line.ToMarketplaceOrderlineProcess(saga.OrderId, x.LineId);
+                var msg = line.ToMarketplaceOrderlineProcess();
                 await producer.SendMessageAsync("marketplace.order-item.process", msg);
 
                 Log.Information("Dispatched marketplace.order-item.process OrderId={OrderId} LineId={LineId} BookId={BookId}",
@@ -48,7 +40,7 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
             }
             else
             {
-                var msg = x.Line.ToInventoryOrderlineProcess(saga.OrderId, x.LineId);
+                var msg = line.ToInventoryOrderlineProcess();
                 await producer.SendMessageAsync("inventory.order-item.process", msg);
 
                 Log.Information("Dispatched inventory.order-item.process OrderId={OrderId} LineId={LineId} BookId={BookId} Quantity={Quantity}",
@@ -93,7 +85,8 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
         if (saga.Status is OrderSagaStatus.Compensating or OrderSagaStatus.Failed or OrderSagaStatus.Completed)
             return;
 
-        // Authorization can arrive while we're in the combined phase
+        // Authorization can arrive while we're in the combined phase.
+        // If it arrives later (InvoiceShipSearch), treat it as a late/duplicate and ignore.
         if (saga.Status != OrderSagaStatus.PaymentAndReserve)
             return;
 
@@ -179,7 +172,8 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
         if (saga.Status == OrderSagaStatus.Completed)
             return;
 
-        // Accept line results in the combined phase
+        // Accept line results in the combined phase only.
+        // (Once we move to InvoiceShipSearch, we don't want late line replies to advance us.)
         if (saga.Status != OrderSagaStatus.PaymentAndReserve)
             return;
 
@@ -207,13 +201,12 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
         if (saga.Status is OrderSagaStatus.Compensating or OrderSagaStatus.Failed or OrderSagaStatus.Completed)
             return;
 
-        // Accept failures in the combined phase
         if (saga.Status != OrderSagaStatus.PaymentAndReserve)
             return;
 
-        var updated = await sagaRepository.TryMarkLineFailedAsync(orderId, lineId, reason, ct);
+        bool updated = await sagaRepository.TryMarkLineFailedAsync(orderId, lineId, reason, ct);
         if (!updated)
-            return; // duplicate/out-of-order
+            return;
 
         await StartCompensationIfWinnerAsync(orderId, reason, ct);
     }
@@ -235,7 +228,7 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
         var reserved = await sagaRepository.CountReservedAsync(orderId, ct);
         var allLinesReserved = reserved == saga.LinesExpected;
 
-        if (allLinesReserved)
+        if (allLinesReserved && !saga.InventoryReserved)
             saga.InventoryReserved = true;
 
         if (!allLinesReserved || !saga.PaymentAuthorized)
@@ -245,8 +238,12 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
             return;
         }
 
-        // single-winner: proceed to downstream exactly once
-        var won = await sagaRepository.TryAdvanceStatusAsync(orderId, OrderSagaStatus.PaymentAndReserve, OrderSagaStatus.InvoiceShipSearch, ct);
+        var won = await sagaRepository.TryAdvanceStatusAsync(
+            orderId,
+            OrderSagaStatus.PaymentAndReserve,
+            OrderSagaStatus.InvoiceShipSearch,
+            ct);
+
         if (!won)
             return;
 
@@ -259,10 +256,10 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
         await producer.SendMessageAsync("shipping.request", new ShippingRequest(orderId));
         await producer.SendMessageAsync("billing.invoice.request", new BillingInvoiceRequest(orderId));
 
-        // You said search is still stubbed; keep it immediate for now
+        // Search is still fire-and-forget in your design
         await producer.SendMessageAsync("search.update.request", new { correlation_id = orderId });
-
         saga.SearchUpdated = true;
+
         saga.Touch();
         await sagaRepository.SaveAsync(saga, ct);
 
@@ -290,9 +287,9 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
 
     private async Task StartCompensationIfWinnerAsync(Guid orderId, string reason, CancellationToken ct)
     {
-        // single-winner: allow compensation to start from either phase that can fail
         var won =
             await sagaRepository.TryAdvanceStatusAsync(orderId, OrderSagaStatus.PaymentAndReserve, OrderSagaStatus.Compensating, ct)
+            || await sagaRepository.TryAdvanceStatusAsync(orderId, OrderSagaStatus.InvoiceShipSearch, OrderSagaStatus.Compensating, ct)
             || await sagaRepository.TryAdvanceStatusAsync(orderId, OrderSagaStatus.WaitingForLineResults, OrderSagaStatus.Compensating, ct);
 
         if (!won)
@@ -309,15 +306,15 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
 
         Log.Warning("Saga entering Compensating. OrderId={OrderId}, Reason={Reason}", orderId, reason);
 
-        // compensate all currently reserved lines
         var reservedLines = await sagaRepository.GetLinesByStatusAsync(orderId, OrderSagaLineStatus.Reserved, ct);
         foreach (var line in reservedLines)
         {
-            await CompensateLinePayloadAsync(line, ct);
-            await sagaRepository.TryMarkLineCompensationSentAsync(orderId, line.LineId, ct);
-        }
+            var marked = await sagaRepository.TryMarkLineCompensationSentAsync(orderId, line.LineId, ct);
+            if (!marked)
+                continue;
 
-        // NOTE: if BillingAuthorized can happen before a line fails, you may want a "billing.void.request" here later.
+            await CompensateLinePayloadAsync(line, ct);
+        }
 
         saga.Status = OrderSagaStatus.Failed;
         saga.Touch();
@@ -333,15 +330,18 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
         if (line is null)
             return;
 
+        var marked = await sagaRepository.TryMarkLineCompensationSentAsync(orderId, lineId, ct);
+        if (!marked)
+            return;
+
         await CompensateLinePayloadAsync(line, ct);
-        await sagaRepository.TryMarkLineCompensationSentAsync(orderId, lineId, ct);
     }
 
     private async Task CompensateLinePayloadAsync(OrderSagaLine line, CancellationToken ct)
     {
         if (line.Marketplace)
         {
-            await producer.SendMessageAsync("marketplace.revert.request", new MarketplaceOrderlineCompensate(
+            await producer.SendMessageAsync("marketplace.order-item.compensate", new MarketplaceOrderlineCompensate(
                 CorrelationId: line.OrderId,
                 LineId: line.LineId,
                 BookId: line.BookId
@@ -349,7 +349,11 @@ public class OrderProcessManager(Producer producer, IOrderSagaRepository sagaRep
         }
         else
         {
-            await producer.SendMessageAsync("inventory.release.request", new InventoryOrderlineCompensate(
+            // Quantity is nullable in OrderSagaLine, but required for inventory lines
+            if (line.Quantity is null)
+                return;
+
+            await producer.SendMessageAsync("inventory.order-item.compensate", new InventoryOrderlineCompensate(
                 CorrelationId: line.OrderId,
                 LineId: line.LineId,
                 BookId: line.BookId,
