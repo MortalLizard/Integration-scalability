@@ -33,4 +33,4 @@ public sealed record InventoryBookCreated(
 
     [property: JsonPropertyName("description")]
     string? Description
-);
+): IBookEvent;

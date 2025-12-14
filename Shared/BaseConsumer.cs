@@ -8,8 +8,8 @@ public abstract class BaseConsumer<TCommand> : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IConsumer _consumer;
-
-    protected abstract string QueueName { get; }
+    
+    public abstract string QueueName { get; }
 
     protected BaseConsumer(IServiceScopeFactory serviceScopeFactory, IConsumer consumer)
     {
