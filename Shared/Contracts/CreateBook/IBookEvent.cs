@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Shared.Contracts.CreateBook;
 
-internal interface IBookEvent
+public interface IBookEvent
 {
     Guid Id {get;}
 }

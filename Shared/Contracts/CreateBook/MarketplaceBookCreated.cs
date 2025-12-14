@@ -32,4 +32,4 @@ public sealed record MarketplaceBookCreated(
 
     [property: JsonPropertyName("seller_id")]
     Guid? SellerId
-);
+) : IBookEvent;

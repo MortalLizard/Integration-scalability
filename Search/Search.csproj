@@ -20,9 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Contracts\Dto\" />
-      <Folder Include="Contracts\Commands\" />
-      <Folder Include="Contracts\Events\" />
       <Folder Include="obj\Debug\net10.0\" />
     </ItemGroup>
 
