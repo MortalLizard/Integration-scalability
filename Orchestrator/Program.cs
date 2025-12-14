@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Orchestrator.OrderSaga;
+using Orchestrator.OrderSaga.Activities;
 using Orchestrator.OrderSaga.Consumers;
 using Orchestrator.OrderSaga.Database.DbContext;
 using Orchestrator.OrderSaga.Database.Repository;
@@ -39,8 +40,16 @@ builder.Services.AddSingleton<Producer>();
 builder.Services.AddTransient<IConsumer, Consumer>();
 
 // Services used in OrderSaga
+builder.Services.AddScoped<IInventoryOrderLineActivity, InventoryOrderLineActivity>();
+builder.Services.AddScoped<IMarketplaceOrderLineActivity, MarketplaceOrderLineActivity>();
+builder.Services.AddScoped<IBillingAuthorizeActivity, BillingAuthorizeActivity>();
+builder.Services.AddScoped<IBillingInvoiceActivity, BillingInvoiceActivity>();
+builder.Services.AddScoped<IShippingActivity, ShippingActivity>();
+builder.Services.AddScoped<ISearchUpdateActivity, SearchUpdateActivity>();
+
 builder.Services.AddScoped<IOrderProcessManager, OrderProcessManager>();
 builder.Services.AddScoped<IOrderSagaRepository, OrderSagaRepository>();
+
 builder.Services.AddHostedService<InventoryOrderlineProcessedConsumer>();
 builder.Services.AddHostedService<InventoryOrderlineProcessFailedConsumer>();
 builder.Services.AddHostedService<MarketplaceOrderlineProcessedConsumer>();

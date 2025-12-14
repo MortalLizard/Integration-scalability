@@ -17,7 +17,7 @@ public sealed class ShippingRequestConsumer : BaseConsumer<ShippingRequest>
     {
         await Task.Delay(TimeSpan.FromMilliseconds(60), cancellationToken);
 
-        var success = true;
+        bool success = true;
         var producer = serviceProvider.GetRequiredService<Producer>();
 
         if (success)

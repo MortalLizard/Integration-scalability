@@ -17,7 +17,7 @@ public sealed class BillingInvoiceConsumer : BaseConsumer<BillingInvoiceRequest>
     {
         await Task.Delay(TimeSpan.FromMilliseconds(60), cancellationToken);
 
-        var success = false;
+        bool success = true;
         var producer = serviceProvider.GetRequiredService<Producer>();
 
         if (success)

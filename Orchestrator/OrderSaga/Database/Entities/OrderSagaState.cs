@@ -37,4 +37,17 @@ public sealed class OrderSagaState
     {
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public bool IsFinished => Status is OrderSagaStatus.Completed or OrderSagaStatus.Failed;
+    public bool IsCompensating => Status == OrderSagaStatus.Compensating;
+
+    /// <summary>
+    /// True when we should accept and apply normal success/failure replies.
+    /// </summary>
+    public bool CanProcessReplies => !IsFinished && !IsCompensating;
+
+    /// <summary>
+    /// Used for "late success" / "late failure" behaviors.
+    /// </summary>
+    public bool IsInFailureFlow => Status is OrderSagaStatus.Compensating or OrderSagaStatus.Failed;
 }
