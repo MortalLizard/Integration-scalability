@@ -33,7 +33,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore Dependencies
-        run: dotnet restore Marketplace/Marketplace.csproj
+        run: dotnet restore
 
       - name: Build Project
         run: dotnet build Marketplace/Marketplace.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
