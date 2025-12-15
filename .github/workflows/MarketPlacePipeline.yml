@@ -1,0 +1,54 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'Marketplace/**'
+      - 'Shared/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  DOTNET_VERSION: '10.x'
+  BUILD_CONFIGURATION: 'Release'
+  DOCKER_IMAGE_NAME: 'marketplace'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore Dependencies
+        run: dotnet restore Marketplace/Marketplace.csproj
+
+      - name: Build Project
+        run: dotnet build Marketplace/Marketplace.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
+
+      - name: Run Tests
+        run: dotnet test Marketplace.Tests/*.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal --collect:"XPlat Code Coverage"
+        continue-on-error: true
+
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: '**/coverage.cobertura.xml'
+          flags: unittests
+          name: marketplace-coverage
+        if: always()
