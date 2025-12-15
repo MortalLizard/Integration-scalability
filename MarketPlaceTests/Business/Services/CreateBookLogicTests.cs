@@ -32,6 +32,7 @@ public class CreateBookLogicTests
     [Test]
     public async Task ShouldPassIntentionally()
     {
+        Assert.That(true);
         Assert.Pass("This test is designed to Pass intentionally.");
     }
 }
