@@ -6,7 +6,7 @@ namespace Orchestrator.OrderSaga.Database.Repository;
 
 public sealed class OrderSagaRepository(OrderDbContext dbContext) : IOrderSagaRepository
 {
-    public async Task CreateAsync(OrderSagaState state, IReadOnlyCollection<OrderSagaLine> lines, CancellationToken ct = default)
+    public async Task CreateSagaWithLinesAsync(OrderSagaState state, IReadOnlyCollection<OrderSagaLine> lines, CancellationToken ct = default)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
 
@@ -23,7 +23,7 @@ public sealed class OrderSagaRepository(OrderDbContext dbContext) : IOrderSagaRe
     }
 
 
-    public Task<OrderSagaState?> GetAsync(Guid orderId, CancellationToken ct = default)
+    public Task<OrderSagaState?> GetSagaAsync(Guid orderId, CancellationToken ct = default)
         => dbContext.OrderSagas.AsNoTracking().FirstOrDefaultAsync(x => x.OrderId == orderId, ct);
 
     public async Task<IReadOnlyList<OrderSagaLine>> GetLinesByStatusAsync(Guid orderId, OrderSagaLineStatus status, CancellationToken ct = default)
@@ -32,7 +32,7 @@ public sealed class OrderSagaRepository(OrderDbContext dbContext) : IOrderSagaRe
             .Where(x => x.OrderId == orderId && x.Status == status)
             .ToListAsync(ct);
 
-    public async Task<bool> TryAdvanceStatusAsync(Guid orderId, OrderSagaStatus from, OrderSagaStatus to, CancellationToken ct = default)
+    public async Task<bool> TryTransitionSagaStatusAsync(Guid orderId, OrderSagaStatus from, OrderSagaStatus to, CancellationToken ct = default)
     {
         int affected = await dbContext.OrderSagas
             .Where(s => s.OrderId == orderId && s.Status == from)
@@ -106,7 +106,7 @@ public sealed class OrderSagaRepository(OrderDbContext dbContext) : IOrderSagaRe
         return affected == 1;
     }
 
-    public async Task<bool> TryReserveLineAndBumpAsync(Guid orderId, Guid lineId, CancellationToken ct = default)
+    public async Task<bool> TrySetLineReservationSuccessAsync(Guid orderId, Guid lineId, CancellationToken ct = default)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
 
@@ -139,7 +139,7 @@ public sealed class OrderSagaRepository(OrderDbContext dbContext) : IOrderSagaRe
     }
 
 
-    public async Task<bool> TryFailLineAndBumpAsync(Guid orderId, Guid lineId, string reason, CancellationToken ct = default)
+    public async Task<bool> TrySetLineReservationFailureAsync(Guid orderId, Guid lineId, string reason, CancellationToken ct = default)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
 

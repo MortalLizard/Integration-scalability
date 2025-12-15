@@ -19,7 +19,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
         var saga = dto.ToInitialSagaState();
         var sagaLines = dto.Items.Select(orderLine => orderLine.ToSagaLine(saga.OrderId)).ToList();
 
-        await sagaRepository.CreateAsync(saga, sagaLines, ct);
+        await sagaRepository.CreateSagaWithLinesAsync(saga, sagaLines, ct);
 
         foreach (var line in sagaLines)
         {
@@ -52,7 +52,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
     // Billing authorization replies
     public async Task HandlePaymentAuthorizedAsync(BillingAuthorized msg, CancellationToken ct = default)
     {
-        var saga = await sagaRepository.GetAsync(msg.CorrelationId, ct);
+        var saga = await sagaRepository.GetSagaAsync(msg.CorrelationId, ct);
         if (saga is null || !saga.CanProcessReplies)
             return;
 
@@ -70,7 +70,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
     // Shipping replies
     public async Task HandleShippingCompletedAsync(ShippingCompleted msg, CancellationToken ct = default)
     {
-        var saga = await sagaRepository.GetAsync(msg.CorrelationId, ct);
+        var saga = await sagaRepository.GetSagaAsync(msg.CorrelationId, ct);
         if (saga is null || !saga.CanProcessReplies)
             return;
 
@@ -88,7 +88,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
     // Billing invoice replies
     public async Task HandleBillingInvoicedAsync(BillingInvoiced msg, CancellationToken ct = default)
     {
-        var saga = await sagaRepository.GetAsync(msg.CorrelationId, ct);
+        var saga = await sagaRepository.GetSagaAsync(msg.CorrelationId, ct);
         if (saga is null || !saga.CanProcessReplies)
             return;
 
@@ -105,7 +105,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
 
     private async Task HandleLineSucceededAsync(Guid orderId, Guid lineId, CancellationToken ct)
     {
-        var saga = await sagaRepository.GetAsync(orderId, ct);
+        var saga = await sagaRepository.GetSagaAsync(orderId, ct);
         if (saga is null || saga.IsFinished)
             return;
 
@@ -126,7 +126,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
         if (saga.Status != OrderSagaStatus.PaymentAndReserve)
             return;
 
-        bool updated = await sagaRepository.TryReserveLineAndBumpAsync(orderId, lineId, ct);
+        bool updated = await sagaRepository.TrySetLineReservationSuccessAsync(orderId, lineId, ct);
         if (!updated)
         {
             Log.Warning("Line success ignored: could not reserve line. OrderId={OrderId} LineId={LineId} SagaStatus={Status}",
@@ -139,7 +139,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
 
     private async Task HandleLineFailedAsync(Guid orderId, Guid lineId, string reason, CancellationToken ct)
     {
-        var saga = await sagaRepository.GetAsync(orderId, ct);
+        var saga = await sagaRepository.GetSagaAsync(orderId, ct);
         if (saga is null || saga.IsFinished)
             return;
 
@@ -155,7 +155,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
             return;
         }
 
-        bool updated = await sagaRepository.TryFailLineAndBumpAsync(orderId, lineId, reason, ct);
+        bool updated = await sagaRepository.TrySetLineReservationFailureAsync(orderId, lineId, reason, ct);
         if (!updated)
         {
             Log.Warning("Line failure could not be applied. OrderId={OrderId} LineId={LineId} SagaStatus={Status}",
@@ -168,7 +168,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
 
     private async Task TryProgressAsync(Guid orderId, CancellationToken ct)
     {
-        var saga = await sagaRepository.GetAsync(orderId, ct);
+        var saga = await sagaRepository.GetSagaAsync(orderId, ct);
         if (saga is null || saga.IsFinished || saga.IsCompensating)
             return;
 
@@ -199,16 +199,16 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
     private async Task FailOrderAsync(Guid orderId, string reason, CancellationToken ct)
     {
         bool won =
-            await sagaRepository.TryAdvanceStatusAsync(orderId, OrderSagaStatus.PaymentAndReserve, OrderSagaStatus.Compensating, ct)
-            || await sagaRepository.TryAdvanceStatusAsync(orderId, OrderSagaStatus.InvoiceShipSearch, OrderSagaStatus.Compensating, ct)
-            || await sagaRepository.TryAdvanceStatusAsync(orderId, OrderSagaStatus.NewOrderReceived, OrderSagaStatus.Compensating, ct);
+            await sagaRepository.TryTransitionSagaStatusAsync(orderId, OrderSagaStatus.PaymentAndReserve, OrderSagaStatus.Compensating, ct)
+            || await sagaRepository.TryTransitionSagaStatusAsync(orderId, OrderSagaStatus.InvoiceShipSearch, OrderSagaStatus.Compensating, ct)
+            || await sagaRepository.TryTransitionSagaStatusAsync(orderId, OrderSagaStatus.NewOrderReceived, OrderSagaStatus.Compensating, ct);
 
         if (!won)
             return;
 
         await sagaRepository.TrySetFailureReasonAsync(orderId, reason, ct);
 
-        var saga = await sagaRepository.GetAsync(orderId, ct);
+        var saga = await sagaRepository.GetSagaAsync(orderId, ct);
         if (saga is null)
             return;
 
@@ -226,7 +226,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
             await CompensateLineAsync(line, ct);
         }
 
-        await sagaRepository.TryAdvanceStatusAsync(orderId, OrderSagaStatus.Compensating, OrderSagaStatus.Failed, ct);
+        await sagaRepository.TryTransitionSagaStatusAsync(orderId, OrderSagaStatus.Compensating, OrderSagaStatus.Failed, ct);
         Log.Warning("Saga marked Failed. OrderId={OrderId}", orderId);
     }
 
