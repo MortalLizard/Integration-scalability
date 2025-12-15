@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />
+    <IsTestProject>true</IsTestProject>
   </ItemGroup>
 
 </Project>
