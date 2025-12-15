@@ -172,27 +172,31 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
         if (saga is null || saga.IsFinished || saga.IsCompensating)
             return;
 
-        if (saga.Status == OrderSagaStatus.PaymentAndReserve)
+        switch (saga.Status)
         {
-            var advanced = await sagaRepository.TryAdvanceToInvoiceShipSearchAsync(orderId, ct);
-            if (!advanced)
+            case OrderSagaStatus.PaymentAndReserve:
+            {
+                var advanced = await sagaRepository.TryAdvanceToInvoiceShipSearchAsync(orderId, ct);
+                if (!advanced)
+                    return;
+
+                await shippingActivity.ExecuteAsync(orderId, ct);
+                await billingInvoiceActivity.ExecuteAsync(orderId, ct);
+                await searchUpdateActivity.ExecuteAsync(orderId, ct);
+
+                // OBS TEMPORARY: SearchUpdated markeres med det samme som true, fordi der endnu ikke er implementeret async reply fra Search.
+                await sagaRepository.TrySetSearchUpdatedAsync(orderId, ct);
+
+                Log.Information("Advanced to InvoiceShipSearch. OrderId={OrderId}", orderId);
                 return;
-
-            await shippingActivity.ExecuteAsync(orderId, ct);
-            await billingInvoiceActivity.ExecuteAsync(orderId, ct);
-            await searchUpdateActivity.ExecuteAsync(orderId, ct);
-
-            await sagaRepository.TrySetSearchUpdatedAsync(orderId, ct);
-
-            Log.Information("Advanced to InvoiceShipSearch. OrderId={OrderId}", orderId);
-            return;
-        }
-
-        if (saga.Status == OrderSagaStatus.InvoiceShipSearch)
-        {
-            bool completed = await sagaRepository.TryCompleteAsync(orderId, ct);
-            if (completed)
-                Log.Information("Saga completed. OrderId={OrderId}", orderId);
+            }
+            case OrderSagaStatus.InvoiceShipSearch:
+            {
+                bool completed = await sagaRepository.TryCompleteAsync(orderId, ct);
+                if (completed)
+                    Log.Information("Saga completed. OrderId={OrderId}", orderId);
+                break;
+            }
         }
     }
 
@@ -217,6 +221,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
         if (saga.Shipped)           await shippingActivity.CompensateAsync(orderId, ct);
         if (saga.PaymentAuthorized) await billingAuthorizeActivity.CompensateAsync(orderId, ct);
 
+        // Cannot check on InventoryReserved status since some order lines might need compensation even if the overall reservation failed
         var reservedLines = await sagaRepository.GetLinesByStatusAsync(orderId, OrderSagaLineStatus.Reserved, ct);
         foreach (var line in reservedLines)
         {
