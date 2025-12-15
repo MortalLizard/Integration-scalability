@@ -28,4 +28,12 @@ public class CreateBookLogicTests
     {
         Assert.Fail("This test is designed to fail intentionally.");
     }
+
+    [Test]
+    public async Task ShouldPassIntentionally()
+    {
+        Assert.Pass("This test is designed to Pass intentionally.");
+    }
+
+
 }
