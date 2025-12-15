@@ -184,7 +184,7 @@ public class OrderProcessManager(IOrderSagaRepository sagaRepository, IInventory
                 await billingInvoiceActivity.ExecuteAsync(orderId, ct);
                 await searchUpdateActivity.ExecuteAsync(orderId, ct);
 
-                // OBS TEMPORARY: SearchUpdated markeres med det samme som true, fordi der endnu ikke er implementeret async reply fra Search.
+                // OBS TEMPORARY: SearchUpdated markeres med det samme som true, fordi der endnu ikke er implementeret async reply i Search Servicen.
                 await sagaRepository.TrySetSearchUpdatedAsync(orderId, ct);
 
                 Log.Information("Advanced to InvoiceShipSearch. OrderId={OrderId}", orderId);
