@@ -36,6 +36,4 @@ public class CreateBookLogicTests
         Assert.That(1 + 1, Is.EqualTo(2));
         Assert.Pass("This test is designed to Pass intentionally.");
     }
-
-
 }
